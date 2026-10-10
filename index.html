@@ -214,18 +214,22 @@
       <div class="content-box">
         <h2>Notepad</h2>
         
-        <button class="btn-main" id="new-note-btn" onclick="toggleNoteForm()">+ Nuova Nota</button>
-
-        <div id="note-form" class="card" style="display:none;">
-          <h3 id="note-form-title">Nuova Nota</h3>
-          <input type="hidden" id="note-id" value="">
-          <input type="text" id="note-title" placeholder="Titolo della nota...">
-          <textarea id="note-content" placeholder="Scrivi il contenuto della nota..." rows="6" style="resize:vertical;"></textarea>
-
-          <button class="btn-main" onclick="saveNoteItem()">Salva Nota</button>
-          <button type="button" onclick="hideNoteForm()" style="background:#444;">Annulla</button>
+        <!-- Box di scrittura rapida in alto -->
+        <div class="card">
+          <input type="hidden" id="active-note-id" value="">
+          <input type="text" id="active-note-title" placeholder="Titolo nota..." style="margin-bottom:8px;">
+          <textarea id="active-note-content" placeholder="Scrivi una nota..." rows="3" style="resize:vertical; margin-bottom:8px;"></textarea>
+          
+          <div style="display: flex; gap: 8px;">
+            <button class="btn-main" onclick="saveQuickNote()" style="flex: 1; margin-bottom: 0;" title="Conferma Nota">✔ Conferma</button>
+            <button type="button" onclick="clearNoteEditor()" style="width: auto; background: #333; margin-bottom: 0;" title="Pulisci campi">✕</button>
+          </div>
         </div>
 
+        <!-- Tasto + per nuova nota -->
+        <button class="btn-main" onclick="clearNoteEditor()" style="margin-bottom: 15px;">+ Nuova Nota</button>
+
+        <!-- Elenco delle note salvate -->
         <div id="notes-container"></div>
       </div>
     </div>
@@ -447,7 +451,7 @@
       }
     }
 
-    // --- NOTEPAD (NOTE MULTIPLE) ---
+    // --- NOTEPAD (BOX RAPIDO + LISTA) ---
     let notesList = [];
     try {
       notesList = JSON.parse(localStorage.getItem('maker_notes_list')) || [];
@@ -455,29 +459,17 @@
       notesList = [];
     }
 
-    function toggleNoteForm() {
-      const form = document.getElementById('note-form');
-      if (form.style.display === 'none') {
-        document.getElementById('note-form-title').innerText = "Nuova Nota";
-        document.getElementById('note-id').value = '';
-        document.getElementById('note-title').value = '';
-        document.getElementById('note-content').value = '';
-        form.style.display = 'block';
-        document.getElementById('new-note-btn').style.display = 'none';
-      } else {
-        hideNoteForm();
-      }
+    function clearNoteEditor() {
+      document.getElementById('active-note-id').value = '';
+      document.getElementById('active-note-title').value = '';
+      document.getElementById('active-note-content').value = '';
+      document.getElementById('slide-1').scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function hideNoteForm() {
-      document.getElementById('note-form').style.display = 'none';
-      document.getElementById('new-note-btn').style.display = 'block';
-    }
-
-    function saveNoteItem() {
-      const id = document.getElementById('note-id').value;
-      const title = document.getElementById('note-title').value;
-      const content = document.getElementById('note-content').value;
+    function saveQuickNote() {
+      const id = document.getElementById('active-note-id').value;
+      const title = document.getElementById('active-note-title').value;
+      const content = document.getElementById('active-note-content').value;
 
       if(!title && !content) return alert('Inserisci almeno un titolo o del testo nella nota');
 
@@ -490,7 +482,7 @@
       }
 
       localStorage.setItem('maker_notes_list', JSON.stringify(notesList));
-      hideNoteForm();
+      clearNoteEditor();
       renderNotes();
     }
 
@@ -498,13 +490,9 @@
       const n = notesList.find(item => item.id == id);
       if(!n) return;
 
-      document.getElementById('note-form-title').innerText = "Modifica Nota";
-      document.getElementById('note-id').value = n.id;
-      document.getElementById('note-title').value = n.title;
-      document.getElementById('note-content').value = n.content || '';
-
-      document.getElementById('note-form').style.display = 'block';
-      document.getElementById('new-note-btn').style.display = 'none';
+      document.getElementById('active-note-id').value = n.id;
+      document.getElementById('active-note-title').value = n.title;
+      document.getElementById('active-note-content').value = n.content || '';
       document.getElementById('slide-1').scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -513,7 +501,7 @@
         notesList = notesList.filter(n => n.id !== id);
         localStorage.setItem('maker_notes_list', JSON.stringify(notesList));
         renderNotes();
-        hideNoteForm();
+        clearNoteEditor();
       }
     }
 
@@ -534,7 +522,6 @@
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
             <h3 style="margin-bottom:0; color:var(--accent);">${n.title}</h3>
             <div>
-              <button type="button" onclick="event.stopPropagation(); editNoteItem(${n.id})" style="width:auto; background:#333; padding:4px 8px; font-size:0.8rem; margin-right:4px;">Modifica</button>
               <button type="button" onclick="event.stopPropagation(); deleteNoteItem(${n.id})" style="width:auto; background:none; border:none; color:#ff4d4d; padding:4px; font-size:0.85rem; cursor:pointer;">🗑️</button>
             </div>
           </div>
