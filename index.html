@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Maker App</title>
+  <title>Pocketool</title>
   <link rel="manifest" href="manifest.json">
   <style>
     :root {
@@ -28,22 +28,46 @@
     header {
       position: fixed;
       top: 0; left: 0; right: 0;
-      height: 55px;
+      height: 85px;
       background: var(--card-bg);
       border-bottom: 1px solid var(--border);
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 30px;
       z-index: 1000;
+      padding-top: 8px;
+    }
+
+    .brand-logo {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 4px;
+      user-select: none;
+    }
+
+    .brand-logo .p-white {
+      color: #ffffff;
+    }
+
+    .brand-logo .p-orange {
+      color: var(--accent);
+    }
+
+    .nav-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 25px;
     }
 
     .nav-item {
       color: var(--text-dim);
       font-weight: bold;
-      font-size: 0.95rem;
-      padding: 6px 10px;
-      border-bottom: 3px solid transparent;
+      font-size: 0.9rem;
+      padding: 4px 8px;
+      border-bottom: 2px solid transparent;
       cursor: pointer;
       transition: all 0.3s;
       user-select: none;
@@ -58,7 +82,7 @@
       display: flex;
       width: 100vw;
       height: 100vh;
-      padding-top: 85px; 
+      padding-top: 115px; 
       overflow-x: auto;
       scroll-snap-type: x mandatory;
       scroll-behavior: smooth;
@@ -110,7 +134,7 @@
 
     #notepad-area {
       width: 100%;
-      height: calc(100vh - 170px);
+      height: calc(100vh - 200px);
       background: var(--card-bg);
       color: #fff;
       border: 1px solid var(--border);
@@ -139,9 +163,14 @@
 <body>
 
   <header>
-    <div class="nav-item active" id="nav-0" onclick="scrollToSlide(0)">Progetti</div>
-    <div class="nav-item" id="nav-1" onclick="scrollToSlide(1)">Notepad</div>
-    <div class="nav-item" id="nav-2" onclick="scrollToSlide(2)">Tools</div>
+    <div class="brand-logo">
+      <span class="p-white">pocke</span><span class="p-orange">tool</span>
+    </div>
+    <div class="nav-bar">
+      <div class="nav-item active" id="nav-0" onclick="scrollToSlide(0)">Progetti</div>
+      <div class="nav-item" id="nav-1" onclick="scrollToSlide(1)">Notepad</div>
+      <div class="nav-item" id="nav-2" onclick="scrollToSlide(2)">Tools</div>
+    </div>
   </header>
 
   <div class="slider-container" id="slider">
@@ -242,7 +271,6 @@
     let currentSlide = 0;
     let isScrolling;
 
-    // Sincronizzazione precisa dello stato attivo nella barra di navigazione durante lo scroll
     slider.addEventListener('scroll', () => {
       window.clearTimeout(isScrolling);
       isScrolling = setTimeout(() => {
@@ -442,85 +470,4 @@
 
       if(!title || !url) return alert('Inserisci sia il nome che l\'URL');
 
-      userTools.push({ id: Date.now(), title, url, cat, default: false });
-      localStorage.setItem('maker_user_tools', JSON.stringify(userTools));
-
-      document.getElementById('custom-link-title').value = '';
-      document.getElementById('custom-link-url').value = '';
-      document.getElementById('custom-link-custom-cat').value = '';
-      document.getElementById('custom-link-cat').value = 'Stampa 3D';
-      document.getElementById('custom-link-custom-cat').style.display = 'none';
-
-      renderTools();
-      updateCategoryDropdown();
-    }
-
-    function deleteUserTool(id) {
-      if(confirm('Vuoi rimuovere questo link?')) {
-        userTools = userTools.filter(t => t.id !== id);
-        localStorage.setItem('maker_user_tools', JSON.stringify(userTools));
-        renderTools();
-        updateCategoryDropdown();
-      }
-    }
-
-    function updateCategoryDropdown() {
-      const select = document.getElementById('custom-link-cat');
-      if(!select) return;
-      const currentVal = select.value;
-      
-      const allTools = [...defaultTools, ...userTools];
-      const categories = [...new Set(allTools.map(t => t.cat))];
-
-      let html = '';
-      categories.forEach(c => {
-        html += `<option value="${c}">${c}</option>`;
-      });
-      html += `<option value="Altro">Altra Categoria...</option>`;
-      
-      select.innerHTML = html;
-      select.value = categories.includes(currentVal) ? currentVal : categories[0];
-    }
-
-    function renderTools() {
-      const container = document.getElementById('tools-categories-container');
-      if(!container) return;
-      container.innerHTML = '';
-
-      const allTools = [...defaultTools, ...userTools];
-      const categories = [...new Set(allTools.map(t => t.cat))];
-
-      categories.forEach(cat => {
-        const catTools = allTools.filter(t => t.cat === cat);
-        
-        const card = document.createElement('div');
-        card.className = 'card';
-        
-        let listHtml = `<ul class="link-list">`;
-        catTools.forEach(t => {
-          listHtml += `
-            <li>
-              <a href="${t.url}" target="_blank">${t.title}</a>
-              ${!t.default ? `<button type="button" onclick="deleteUserTool(${t.id})" style="width:auto; background:none; border:none; color:#ff4d4d; padding:2px 6px; font-size:0.85rem; cursor:pointer;">✕</button>` : ''}
-            </li>
-          `;
-        });
-        listHtml += `</ul>`;
-
-        card.innerHTML = `<h3>📌 ${cat}</h3>${listHtml}`;
-        container.appendChild(card);
-      });
-    }
-
-    // Inizializzazione all'avvio
-    renderProjects();
-    renderTools();
-    updateCategoryDropdown();
-    updateNavActiveState();
-
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js');
-    }
-  </script>
-</body>
-</html>
+      userTools.
