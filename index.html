@@ -16,25 +16,27 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: var(--bg); color: var(--text); overflow-x: hidden; }
+    body { background-color: var(--bg); color: var(--text); overflow: hidden; height: 100vh; }
 
+    /* Header e Navigazione al centro */
     header {
       position: fixed;
       top: 0; left: 0; right: 0;
-      height: 60px;
+      height: 55px;
       background: var(--card-bg);
       border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
-      justify-content: space-around;
+      justify-content: center;
+      gap: 30px;
       z-index: 100;
     }
 
     .nav-item {
       color: var(--text-dim);
       font-weight: bold;
-      font-size: 0.9rem;
-      padding: 8px 12px;
+      font-size: 0.95rem;
+      padding: 6px 10px;
       border-bottom: 3px solid transparent;
       cursor: pointer;
       transition: all 0.3s;
@@ -45,48 +47,33 @@
       border-bottom-color: var(--accent);
     }
 
+    /* Container Slider */
     .slider-container {
       display: flex;
       width: 100vw;
-      height: calc(100vh - 60px);
-      margin-top: 60px;
+      height: calc(100vh - 55px);
+      margin-top: 55px;
       overflow-x: auto;
       scroll-snap-type: x mandatory;
       scroll-behavior: smooth;
+      scrollbar-width: none; /* Nasconde scrollbar su Firefox */
     }
+    .slider-container::-webkit-scrollbar { display: none; } /* Nasconde scrollbar su Chrome/Safari */
 
-    .arrow-btn {
-      display: none;
-      position: fixed;
-      top: 50%;
-      transform: translateY(-50%);
-      background: rgba(30, 30, 30, 0.8);
-      color: var(--accent);
-      border: 1px solid var(--border);
-      font-size: 1.5rem;
-      padding: 15px 10px;
-      cursor: pointer;
-      z-index: 90;
-      border-radius: 8px;
-    }
-    @media (min-width: 768px) {
-      .arrow-btn { display: block; }
-    }
-    .arrow-left { left: 10px; }
-    .arrow-right { right: 10px; }
-
+    /* Singola Sezione */
     .slide-section {
       flex: 0 0 100vw;
       width: 100vw;
       height: 100%;
       scroll-snap-align: start;
-      padding: 20px;
+      padding: 15px;
       overflow-y: auto;
     }
 
     .content-box {
-      max-width: 650px;
-      margin: 0 auto 40px auto;
+      max-width: 600px;
+      margin: 0 auto;
+      padding-bottom: 50px;
     }
 
     .card {
@@ -97,11 +84,17 @@
       margin-bottom: 15px;
     }
 
-    h2 { color: var(--accent); margin-bottom: 15px; font-size: 1.2rem; }
-    h3 { font-size: 1rem; margin-bottom: 10px; }
+    /* Form con scrolling interno per evitare tagli */
+    #project-form {
+      max-height: calc(100vh - 140px);
+      overflow-y: auto;
+    }
+
+    h2 { color: var(--accent); margin-bottom: 12px; font-size: 1.1rem; }
+    h3 { font-size: 1rem; margin-bottom: 8px; }
 
     input, select, textarea, button {
-      width: 100%; padding: 10px; margin-bottom: 10px;
+      width: 100%; padding: 9px; margin-bottom: 8px;
       background: #2a2a2a; border: 1px solid var(--border);
       color: #fff; border-radius: 5px; font-size: 0.9rem;
     }
@@ -111,30 +104,31 @@
       border: none; cursor: pointer;
     }
 
-    .mat-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
-    .mat-table th, .mat-table td { border: 1px solid var(--border); padding: 8px; text-align: left; }
-    .mat-table th { background: #252525; color: var(--accent); font-size: 0.85rem; }
+    .mat-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+    .mat-table th, .mat-table td { border: 1px solid var(--border); padding: 6px; text-align: left; }
+    .mat-table th { background: #252525; color: var(--accent); font-size: 0.8rem; }
     .mat-table input { margin-bottom: 0; }
 
+    /* Notepad ottimizzato senza debordare */
     #notepad-area {
       width: 100%;
-      height: calc(100vh - 180px);
+      height: calc(100vh - 130px);
       background: var(--card-bg);
       color: #fff;
       border: 1px solid var(--border);
-      padding: 15px;
-      font-size: 1rem;
-      line-height: 1.5;
+      padding: 12px;
+      font-size: 0.95rem;
+      line-height: 1.4;
       resize: none;
       border-radius: 8px;
     }
 
     .link-list { list-style: none; }
-    .link-list li { margin-bottom: 8px; }
+    .link-list li { margin-bottom: 6px; }
     .link-list a {
       color: #4da6ff; text-decoration: none; display: block;
-      background: #2a2a2a; padding: 10px; border-radius: 5px;
-      border: 1px solid var(--border);
+      background: #2a2a2a; padding: 8px 10px; border-radius: 5px;
+      border: 1px solid var(--border); font-size: 0.9rem;
     }
 
     .project-card {
@@ -151,11 +145,8 @@
   <header>
     <div class="nav-item active" onclick="scrollToSlide(0)">Progetti</div>
     <div class="nav-item" onclick="scrollToSlide(1)">Notepad</div>
-    <div class="nav-item" onclick="scrollToSlide(2)">Tool & Link</div>
+    <div class="nav-item" onclick="scrollToSlide(2)">Tools</div>
   </header>
-
-  <button class="arrow-btn arrow-left" onclick="moveSlide(-1)">&#10094;</button>
-  <button class="arrow-btn arrow-right" onclick="moveSlide(1)">&#10095;</button>
 
   <div class="slider-container" id="slider">
 
@@ -188,8 +179,8 @@
             <thead>
               <tr>
                 <th>Materiale</th>
-                <th style="width: 90px;">Costo (€)</th>
-                <th style="width: 40px;"></th>
+                <th style="width: 80px;">Costo (€)</th>
+                <th style="width: 35px;"></th>
               </tr>
             </thead>
             <tbody id="materials-list"></tbody>
@@ -208,14 +199,14 @@
     <div class="slide-section" id="slide-1">
       <div class="content-box">
         <h2>Notepad Rapido</h2>
-        <textarea id="notepad-area" placeholder="Scrivi qui appunti veloci, quote, codici colore o Promemoria..." oninput="saveNote()"></textarea>
+        <textarea id="notepad-area" placeholder="Scrivi qui appunti veloci, quote, codici colore o promemoria..." oninput="saveNote()"></textarea>
       </div>
     </div>
 
-    <!-- SEZIONE 3: TOOL & RISORSE -->
+    <!-- SEZIONE 3: TOOLS -->
     <div class="slide-section" id="slide-2">
       <div class="content-box">
-        <h2>Tool & Risorse Utili</h2>
+        <h2>Tools & Risorse</h2>
 
         <div class="card">
           <h3>Aggiungi un tuo Link Personale</h3>
@@ -272,13 +263,6 @@
       currentSlide = index;
       slider.scrollTo({ left: window.innerWidth * index, behavior: 'smooth' });
       updateNav();
-    }
-
-    function moveSlide(direction) {
-      let nextSlide = currentSlide + direction;
-      if(nextSlide >= 0 && nextSlide < 3) {
-        scrollToSlide(nextSlide);
-      }
     }
 
     // --- PROGETTI ---
@@ -345,10 +329,8 @@
       });
 
       if (id) {
-        // Modifica progetto esistente
         projects = projects.map(p => p.id == id ? { id: Number(id), name, cat, notes, materials } : p);
       } else {
-        // Nuovo progetto
         projects.push({ id: Date.now(), name, cat, notes, materials });
       }
 
@@ -387,7 +369,6 @@
 
       document.getElementById('project-form').style.display = 'block';
       document.getElementById('new-proj-btn').style.display = 'none';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function renderProjects() {
@@ -407,12 +388,12 @@
             <h3 style="margin-bottom:0;">${p.name}</h3>
             <span style="background:var(--accent); color:#fff; padding:2px 8px; border-radius:10px; font-size:0.8rem;">${p.cat}</span>
           </div>
-          <p style="color:var(--text-dim); font-size:0.9rem; margin-bottom:8px; white-space: pre-wrap;">${p.notes ? p.notes.substring(0, 80) + (p.notes.length > 80 ? '...' : '') : 'Nessuna nota'}</p>
+          <p style="color:var(--text-dim); font-size:0.85rem; margin-bottom:6px; white-space: pre-wrap;">${p.notes ? p.notes.substring(0, 60) + (p.notes.length > 60 ? '...' : '') : 'Nessuna nota'}</p>
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <strong style="color:var(--text);">Costo: € ${totalCost.toFixed(2)}</strong>
+            <strong style="color:var(--text); font-size:0.9rem;">Costo: € ${totalCost.toFixed(2)}</strong>
             <div>
-              <button type="button" onclick="event.stopPropagation(); editProject(${p.id})" style="width:auto; background:#333; padding:5px 10px; font-size:0.8rem; margin-right:5px;">Modifica</button>
-              <button type="button" onclick="event.stopPropagation(); deleteProject(${p.id})" style="width:auto; background:none; border:none; color:#ff4d4d; padding:5px; font-size:0.9rem; cursor:pointer;">🗑️</button>
+              <button type="button" onclick="event.stopPropagation(); editProject(${p.id})" style="width:auto; background:#333; padding:4px 8px; font-size:0.8rem; margin-right:4px;">Modifica</button>
+              <button type="button" onclick="event.stopPropagation(); deleteProject(${p.id})" style="width:auto; background:none; border:none; color:#ff4d4d; padding:4px; font-size:0.85rem; cursor:pointer;">🗑️</button>
             </div>
           </div>
         `;
@@ -466,10 +447,10 @@
       userLinks.forEach((l, i) => {
         const li = document.createElement('li');
         li.style.display = 'flex';
-        li.style.justifyElement = 'space-between';
+        li.style.justifyContent = 'space-between';
         li.innerHTML = `
           <a href="${l.url}" target="_blank" style="flex:1; margin-right:5px; overflow:hidden; text-overflow:ellipsis;">${l.title}</a>
-          <button type="button" onclick="deleteUserLink(${i})" style="width:auto; background:#2a2a2a; border:1px solid var(--border); color:#ff4d4d; padding: 5px 10px;">✕</button>
+          <button type="button" onclick="deleteUserLink(${i})" style="width:auto; background:#2a2a2a; border:1px solid var(--border); color:#ff4d4d; padding: 4px 8px;">✕</button>
         `;
         list.appendChild(li);
       });
