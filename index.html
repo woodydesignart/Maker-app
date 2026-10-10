@@ -47,7 +47,7 @@
       border-bottom-color: var(--accent);
     }
 
-    /* Container Slider */
+    /* Container Slider con spaziatura corretta sotto l'header */
     .slider-container {
       display: flex;
       width: 100vw;
@@ -56,24 +56,24 @@
       overflow-x: auto;
       scroll-snap-type: x mandatory;
       scroll-behavior: smooth;
-      scrollbar-width: none; /* Nasconde scrollbar su Firefox */
+      scrollbar-width: none;
     }
-    .slider-container::-webkit-scrollbar { display: none; } /* Nasconde scrollbar su Chrome/Safari */
+    .slider-container::-webkit-scrollbar { display: none; }
 
-    /* Singola Sezione */
+    /* Singola Sezione con padding top per evitare sovrapposizioni */
     .slide-section {
       flex: 0 0 100vw;
       width: 100vw;
       height: 100%;
       scroll-snap-align: start;
-      padding: 15px;
+      padding: 20px 15px 15px 15px;
       overflow-y: auto;
     }
 
     .content-box {
       max-width: 600px;
       margin: 0 auto;
-      padding-bottom: 50px;
+      padding-bottom: 60px;
     }
 
     .card {
@@ -84,9 +84,9 @@
       margin-bottom: 15px;
     }
 
-    /* Form con scrolling interno per evitare tagli */
+    /* Form con scrolling interno */
     #project-form {
-      max-height: calc(100vh - 140px);
+      max-height: calc(100vh - 150px);
       overflow-y: auto;
     }
 
@@ -109,10 +109,10 @@
     .mat-table th { background: #252525; color: var(--accent); font-size: 0.8rem; }
     .mat-table input { margin-bottom: 0; }
 
-    /* Notepad ottimizzato senza debordare */
+    /* Notepad ottimizzato */
     #notepad-area {
       width: 100%;
-      height: calc(100vh - 130px);
+      height: calc(100vh - 140px);
       background: var(--card-bg);
       color: #fff;
       border: 1px solid var(--border);
@@ -444,7 +444,7 @@
         return;
       }
 
-      userLinks.forEach((l, i) => {
+    userLinks.forEach((l, i) => {
         const li = document.createElement('li');
         li.style.display = 'flex';
         li.style.justifyContent = 'space-between';
