@@ -18,7 +18,6 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { background-color: var(--bg); color: var(--text); overflow-x: hidden; }
 
-    /* Header e Navigazione in alto */
     header {
       position: fixed;
       top: 0; left: 0; right: 0;
@@ -46,7 +45,6 @@
       border-bottom-color: var(--accent);
     }
 
-    /* Container Slider */
     .slider-container {
       display: flex;
       width: 100vw;
@@ -57,7 +55,6 @@
       scroll-behavior: smooth;
     }
 
-    /* Frecce PC */
     .arrow-btn {
       display: none;
       position: fixed;
@@ -78,7 +75,6 @@
     .arrow-left { left: 10px; }
     .arrow-right { right: 10px; }
 
-    /* Singola Sezione */
     .slide-section {
       flex: 0 0 100vw;
       width: 100vw;
@@ -115,13 +111,11 @@
       border: none; cursor: pointer;
     }
 
-    /* Tabella Materiali */
     .mat-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
     .mat-table th, .mat-table td { border: 1px solid var(--border); padding: 8px; text-align: left; }
     .mat-table th { background: #252525; color: var(--accent); font-size: 0.85rem; }
     .mat-table input { margin-bottom: 0; }
 
-    /* Notepad */
     #notepad-area {
       width: 100%;
       height: calc(100vh - 180px);
@@ -135,13 +129,20 @@
       border-radius: 8px;
     }
 
-    /* Tool Links */
     .link-list { list-style: none; }
     .link-list li { margin-bottom: 8px; }
     .link-list a {
       color: #4da6ff; text-decoration: none; display: block;
       background: #2a2a2a; padding: 10px; border-radius: 5px;
       border: 1px solid var(--border);
+    }
+
+    .project-card {
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .project-card:hover {
+      border-color: var(--accent);
     }
   </style>
 </head>
@@ -153,7 +154,6 @@
     <div class="nav-item" onclick="scrollToSlide(2)">Tool & Link</div>
   </header>
 
-  <!-- Frecce di navigazione PC -->
   <button class="arrow-btn arrow-left" onclick="moveSlide(-1)">&#10094;</button>
   <button class="arrow-btn arrow-right" onclick="moveSlide(1)">&#10095;</button>
 
@@ -164,11 +164,12 @@
       <div class="content-box">
         <h2>I Miei Progetti</h2>
         
-        <button class="btn-main" onclick="toggleProjectForm()">+ Nuovo Progetto</button>
+        <button class="btn-main" id="new-proj-btn" onclick="toggleProjectForm()">+ Nuovo Progetto</button>
 
-        <!-- Form Nuovo Progetto -->
+        <!-- Form Nuovo/Modifica Progetto -->
         <div id="project-form" class="card" style="display:none;">
-          <h3>Nuovo Progetto</h3>
+          <h3 id="form-title">Nuovo Progetto</h3>
+          <input type="hidden" id="p-id" value="">
           <input type="text" id="p-name" placeholder="Nome del progetto">
           
           <select id="p-cat" onchange="checkCustomCategory(this.value)">
@@ -196,6 +197,7 @@
           <button type="button" onclick="addMaterialRow()" style="background:#333;">+ Materiale</button>
 
           <button class="btn-main" onclick="saveProject()">Salva Progetto</button>
+          <button type="button" onclick="hideProjectForm()" style="background:#444;">Annulla</button>
         </div>
 
         <div id="projects-container"></div>
@@ -252,7 +254,6 @@
     const navItems = document.querySelectorAll('.nav-item');
     let currentSlide = 0;
 
-    // Gestione Slider con Scroll Sync
     slider.addEventListener('scroll', () => {
       const index = Math.round(slider.scrollLeft / window.innerWidth);
       if(index !== currentSlide) {
@@ -285,7 +286,25 @@
 
     function toggleProjectForm() {
       const form = document.getElementById('project-form');
-      form.style.display = form.style.display === 'none' ? 'block' : 'none';
+      if (form.style.display === 'none') {
+        document.getElementById('form-title').innerText = "Nuovo Progetto";
+        document.getElementById('p-id').value = '';
+        document.getElementById('p-name').value = '';
+        document.getElementById('p-cat').value = 'Falegnameria';
+        document.getElementById('p-custom-cat').value = '';
+        document.getElementById('p-custom-cat').style.display = 'none';
+        document.getElementById('p-notes').value = '';
+        document.getElementById('materials-list').innerHTML = '';
+        form.style.display = 'block';
+        document.getElementById('new-proj-btn').style.display = 'none';
+      } else {
+        hideProjectForm();
+      }
+    }
+
+    function hideProjectForm() {
+      document.getElementById('project-form').style.display = 'none';
+      document.getElementById('new-proj-btn').style.display = 'block';
     }
 
     function checkCustomCategory(val) {
@@ -298,18 +317,20 @@
       tr.innerHTML = `
         <td><input type="text" class="m-name" value="${name}" placeholder="Es. Tavola Abete"></td>
         <td><input type="number" class="m-cost" value="${cost}" placeholder="0.00"></td>
-        <td><button onclick="this.closest('tr').remove()" style="background:none; border:none; color:#ff4d4d; cursor:pointer;">✕</button></td>
+        <td><button type="button" onclick="this.closest('tr').remove()" style="background:none; border:none; color:#ff4d4d; cursor:pointer;">✕</button></td>
       `;
       tbody.appendChild(tr);
     }
 
     function saveProject() {
+      const id = document.getElementById('p-id').value;
       const name = document.getElementById('p-name').value;
       if(!name) return alert('Inserisci il nome del progetto');
 
       let cat = document.getElementById('p-cat').value;
+      let customCatInput = document.getElementById('p-custom-cat');
       if(cat === 'Altro') {
-        cat = document.getElementById('p-custom-cat').value || 'Altro';
+        cat = customCatInput.value || 'Altro';
       }
 
       const notes = document.getElementById('p-notes').value;
@@ -323,38 +344,79 @@
         }
       });
 
-      projects.push({ id: Date.now(), name, cat, notes, materials });
-      localStorage.setItem('maker_projects', JSON.stringify(projects));
+      if (id) {
+        // Modifica progetto esistente
+        projects = projects.map(p => p.id == id ? { id: Number(id), name, cat, notes, materials } : p);
+      } else {
+        // Nuovo progetto
+        projects.push({ id: Date.now(), name, cat, notes, materials });
+      }
 
-      // Reset Form
-      document.getElementById('p-name').value = '';
-      document.getElementById('p-notes').value = '';
-      document.getElementById('materials-list').innerHTML = '';
-      toggleProjectForm();
+      localStorage.setItem('maker_projects', JSON.stringify(projects));
+      hideProjectForm();
       renderProjects();
+    }
+
+    function editProject(id) {
+      const p = projects.find(item => item.id == id);
+      if(!p) return;
+
+      document.getElementById('form-title').innerText = "Modifica Progetto";
+      document.getElementById('p-id').value = p.id;
+      document.getElementById('p-name').value = p.name;
+      
+      const selectCat = document.getElementById('p-cat');
+      const standardCats = ['Falegnameria', 'Metallo', 'Stampa 3D', 'Laser'];
+      if(standardCats.includes(p.cat)) {
+        selectCat.value = p.cat;
+        document.getElementById('p-custom-cat').style.display = 'none';
+        document.getElementById('p-custom-cat').value = '';
+      } else {
+        selectCat.value = 'Altro';
+        document.getElementById('p-custom-cat').style.display = 'block';
+        document.getElementById('p-custom-cat').value = p.cat;
+      }
+
+      document.getElementById('p-notes').value = p.notes || '';
+      
+      const tbody = document.getElementById('materials-list');
+      tbody.innerHTML = '';
+      if(p.materials) {
+        p.materials.forEach(m => addMaterialRow(m.name, m.cost));
+      }
+
+      document.getElementById('project-form').style.display = 'block';
+      document.getElementById('new-proj-btn').style.display = 'none';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function renderProjects() {
       const container = document.getElementById('projects-container');
       container.innerHTML = '';
       if(projects.length === 0) {
-        container.innerHTML = '<p style="color:var(--text-dim); text-align:center;">Nessun progetto salvato.</p>';
+        container.innerHTML = '<p style="color:var(--text-dim); text-align:center; margin-top:20px;">Nessun progetto salvato.</p>';
         return;
       }
 
       projects.forEach(p => {
-        const totalCost = p.materials.reduce((sum, m) => sum + m.cost, 0);
+        const totalCost = p.materials ? p.materials.reduce((sum, m) => sum + m.cost, 0) : 0;
         const card = document.createElement('div');
-        card.className = 'card';
+        card.className = 'card project-card';
         card.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h3>${p.name}</h3>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+            <h3 style="margin-bottom:0;">${p.name}</h3>
             <span style="background:var(--accent); color:#fff; padding:2px 8px; border-radius:10px; font-size:0.8rem;">${p.cat}</span>
           </div>
-          <p style="color:var(--text-dim); font-size:0.9rem; margin-bottom:10px;">${p.notes}</p>
-          <p><strong>Costo Totale: € ${totalCost.toFixed(2)}</strong></p>
-          <button onclick="deleteProject(${p.id})" style="background:none; border:none; color:#ff4d4d; text-align:right; cursor:pointer; width:auto; padding:5px 0;">Cancella</button>
+          <p style="color:var(--text-dim); font-size:0.9rem; margin-bottom:8px; white-space: pre-wrap;">${p.notes ? p.notes.substring(0, 80) + (p.notes.length > 80 ? '...' : '') : 'Nessuna nota'}</p>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong style="color:var(--text);">Costo: € ${totalCost.toFixed(2)}</strong>
+            <div>
+              <button type="button" onclick="event.stopPropagation(); editProject(${p.id})" style="width:auto; background:#333; padding:5px 10px; font-size:0.8rem; margin-right:5px;">Modifica</button>
+              <button type="button" onclick="event.stopPropagation(); deleteProject(${p.id})" style="width:auto; background:none; border:none; color:#ff4d4d; padding:5px; font-size:0.9rem; cursor:pointer;">🗑️</button>
+            </div>
+          </div>
         `;
+        card.onclick = () => editProject(p.id);
         container.appendChild(card);
       });
     }
@@ -364,6 +426,7 @@
         projects = projects.filter(p => p.id !== id);
         localStorage.setItem('maker_projects', JSON.stringify(projects));
         renderProjects();
+        hideProjectForm();
       }
     }
 
@@ -403,10 +466,10 @@
       userLinks.forEach((l, i) => {
         const li = document.createElement('li');
         li.style.display = 'flex';
-        li.style.justifyContent = 'space-between';
+        li.style.justifyElement = 'space-between';
         li.innerHTML = `
-          <a href="${l.url}" target="_blank" style="flex:1; margin-right:5px;">${l.title}</a>
-          <button onclick="deleteUserLink(${i})" style="width:auto; background:#2a2a2a; border:1px solid var(--border); color:#ff4d4d;">✕</button>
+          <a href="${l.url}" target="_blank" style="flex:1; margin-right:5px; overflow:hidden; text-overflow:ellipsis;">${l.title}</a>
+          <button type="button" onclick="deleteUserLink(${i})" style="width:auto; background:#2a2a2a; border:1px solid var(--border); color:#ff4d4d; padding: 5px 10px;">✕</button>
         `;
         list.appendChild(li);
       });
@@ -418,7 +481,6 @@
       renderUserLinks();
     }
 
-    // Inizializzazione
     renderProjects();
     renderUserLinks();
     if ('serviceWorker' in navigator) {
