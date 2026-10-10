@@ -2,8 +2,9 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Maker Notes & Tools</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Maker App</title>
+  <link rel="manifest" href="manifest.json">
   <style>
     :root {
       --bg: #121212;
@@ -13,198 +14,416 @@
       --text-dim: #a0a0a0;
       --border: #333;
     }
+
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: var(--bg); color: var(--text); padding-bottom: 70px; }
-    
-    /* Header e Navigazione */
-    header { background-color: var(--card-bg); padding: 15px; text-align: center; font-size: 1.2rem; font-weight: bold; border-bottom: 1px solid var(--border); color: var(--accent); }
-    nav { position: fixed; bottom: 0; width: 100%; background: var(--card-bg); display: flex; border-top: 1px solid var(--border); }
-    nav button { flex: 1; padding: 12px; background: none; border: none; color: var(--text-dim); font-size: 0.9rem; font-weight: bold; cursor: pointer; }
-    nav button.active { color: var(--accent); border-top: 2px solid var(--accent); }
-    
-    /* Sezioni */
-    .section { display: none; padding: 15px; max-width: 600px; margin: 0 auto; }
-    .section.active { display: block; }
-    
-    /* Card e Form */
-    .card { background: var(--card-bg); padding: 15px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 15px; }
-    h2 { margin-bottom: 15px; color: var(--accent); font-size: 1.1rem; }
-    h3 { margin-bottom: 10px; font-size: 1rem; color: #fff; }
-    input, select, textarea, button.btn { width: 100%; padding: 10px; margin-bottom: 10px; background: #2a2a2a; border: 1px solid var(--border); color: #fff; border-radius: 5px; }
-    button.btn-main { background: var(--accent); color: #fff; font-weight: bold; border: none; cursor: pointer; margin-top: 5px; }
-    
-    /* Tabelle e Liste */
+    body { background-color: var(--bg); color: var(--text); overflow-x: hidden; }
+
+    /* Header e Navigazione in alto */
+    header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 60px;
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      z-index: 100;
+    }
+
+    .nav-item {
+      color: var(--text-dim);
+      font-weight: bold;
+      font-size: 0.9rem;
+      padding: 8px 12px;
+      border-bottom: 3px solid transparent;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .nav-item.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    /* Container Slider */
+    .slider-container {
+      display: flex;
+      width: 100vw;
+      height: calc(100vh - 60px);
+      margin-top: 60px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+    }
+
+    /* Frecce PC */
+    .arrow-btn {
+      display: none;
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(30, 30, 30, 0.8);
+      color: var(--accent);
+      border: 1px solid var(--border);
+      font-size: 1.5rem;
+      padding: 15px 10px;
+      cursor: pointer;
+      z-index: 90;
+      border-radius: 8px;
+    }
+    @media (min-width: 768px) {
+      .arrow-btn { display: block; }
+    }
+    .arrow-left { left: 10px; }
+    .arrow-right { right: 10px; }
+
+    /* Singola Sezione */
+    .slide-section {
+      flex: 0 0 100vw;
+      width: 100vw;
+      height: 100%;
+      scroll-snap-align: start;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .content-box {
+      max-width: 650px;
+      margin: 0 auto 40px auto;
+    }
+
+    .card {
+      background: var(--card-bg);
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      margin-bottom: 15px;
+    }
+
+    h2 { color: var(--accent); margin-bottom: 15px; font-size: 1.2rem; }
+    h3 { font-size: 1rem; margin-bottom: 10px; }
+
+    input, select, textarea, button {
+      width: 100%; padding: 10px; margin-bottom: 10px;
+      background: #2a2a2a; border: 1px solid var(--border);
+      color: #fff; border-radius: 5px; font-size: 0.9rem;
+    }
+
+    button.btn-main {
+      background: var(--accent); color: #fff; font-weight: bold;
+      border: none; cursor: pointer;
+    }
+
+    /* Tabella Materiali */
+    .mat-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+    .mat-table th, .mat-table td { border: 1px solid var(--border); padding: 8px; text-align: left; }
+    .mat-table th { background: #252525; color: var(--accent); font-size: 0.85rem; }
+    .mat-table input { margin-bottom: 0; }
+
+    /* Notepad */
+    #notepad-area {
+      width: 100%;
+      height: calc(100vh - 180px);
+      background: var(--card-bg);
+      color: #fff;
+      border: 1px solid var(--border);
+      padding: 15px;
+      font-size: 1rem;
+      line-height: 1.5;
+      resize: none;
+      border-radius: 8px;
+    }
+
+    /* Tool Links */
     .link-list { list-style: none; }
     .link-list li { margin-bottom: 8px; }
-    .link-list a { color: #4da6ff; text-decoration: none; display: block; background: #2a2a2a; padding: 10px; border-radius: 5px; border: 1px solid var(--border); }
-    .link-list a:hover { background: #333; }
-    .project-item { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-    .cost-badge { background: var(--accent); color: #fff; padding: 3px 8px; border-radius: 12px; font-size: 0.8rem; }
-    .material-row { display: flex; gap: 5px; margin-bottom: 5px; }
-    .material-row input { margin-bottom: 0; }
+    .link-list a {
+      color: #4da6ff; text-decoration: none; display: block;
+      background: #2a2a2a; padding: 10px; border-radius: 5px;
+      border: 1px solid var(--border);
+    }
   </style>
 </head>
 <body>
 
-  <header>Maker App 🛠️</header>
+  <header>
+    <div class="nav-item active" onclick="scrollToSlide(0)">Progetti</div>
+    <div class="nav-item" onclick="scrollToSlide(1)">Notepad</div>
+    <div class="nav-item" onclick="scrollToSlide(2)">Tool & Link</div>
+  </header>
 
-  <!-- SEZIONE PROGETTI -->
-  <div id="sec-projects" class="section active">
-    <h2>I Miei Progetti</h2>
-    <button class="btn btn-main" onclick="showNewProjectForm()">+ Nuovo Progetto</button>
+  <!-- Frecce di navigazione PC -->
+  <button class="arrow-btn arrow-left" onclick="moveSlide(-1)">&#10094;</button>
+  <button class="arrow-btn arrow-right" onclick="moveSlide(1)">&#10095;</button>
 
-    <div id="project-form" class="card" style="display:none;">
-      <h3>Crea / Modifica Progetto</h3>
-      <input type="text" id="p-name" placeholder="Nome del progetto">
-      <select id="p-cat">
-        <option value="Stampa 3D">Stampa 3D</option>
-        <option value="Taglio Laser">Taglio Laser</option>
-        <option value="Falegnameria">Falegnameria</option>
-        <option value="Misto">Misto/Altro</option>
-      </select>
-      <textarea id="p-notes" placeholder="Note tecniche o parametri di lavorazione..." rows="3"></textarea>
-      
-      <h4>Materiali e Costi</h4>
-      <div id="materials-container"></div>
-      <button class="btn" onclick="addMaterialRow()">+ Aggiungi Materiale</button>
-      
-      <button class="btn btn-main" onclick="saveProject()">Salva Progetto</button>
-      <button class="btn" style="background:#555;" onclick="hideProjectForm()">Annulla</button>
+  <div class="slider-container" id="slider">
+
+    <!-- SEZIONE 1: PROGETTI -->
+    <div class="slide-section" id="slide-0">
+      <div class="content-box">
+        <h2>I Miei Progetti</h2>
+        
+        <button class="btn-main" onclick="toggleProjectForm()">+ Nuovo Progetto</button>
+
+        <!-- Form Nuovo Progetto -->
+        <div id="project-form" class="card" style="display:none;">
+          <h3>Nuovo Progetto</h3>
+          <input type="text" id="p-name" placeholder="Nome del progetto">
+          
+          <select id="p-cat" onchange="checkCustomCategory(this.value)">
+            <option value="Falegnameria">Falegnameria</option>
+            <option value="Metallo">Metallo</option>
+            <option value="Stampa 3D">Stampa 3D</option>
+            <option value="Laser">Laser</option>
+            <option value="Altro">Altro (Personalizzato)</option>
+          </select>
+          <input type="text" id="p-custom-cat" placeholder="Specifica categoria..." style="display:none;">
+
+          <textarea id="p-notes" placeholder="Note tecniche o parametri..." rows="3"></textarea>
+
+          <h4>Elenco Materiali e Costi</h4>
+          <table class="mat-table">
+            <thead>
+              <tr>
+                <th>Materiale</th>
+                <th style="width: 90px;">Costo (€)</th>
+                <th style="width: 40px;"></th>
+              </tr>
+            </thead>
+            <tbody id="materials-list"></tbody>
+          </table>
+          <button type="button" onclick="addMaterialRow()" style="background:#333;">+ Materiale</button>
+
+          <button class="btn-main" onclick="saveProject()">Salva Progetto</button>
+        </div>
+
+        <div id="projects-container"></div>
+      </div>
     </div>
 
-    <div id="projects-list"></div>
+    <!-- SEZIONE 2: NOTEPAD -->
+    <div class="slide-section" id="slide-1">
+      <div class="content-box">
+        <h2>Notepad Rapido</h2>
+        <textarea id="notepad-area" placeholder="Scrivi qui appunti veloci, quote, codici colore o Promemoria..." oninput="saveNote()"></textarea>
+      </div>
+    </div>
+
+    <!-- SEZIONE 3: TOOL & RISORSE -->
+    <div class="slide-section" id="slide-2">
+      <div class="content-box">
+        <h2>Tool & Risorse Utili</h2>
+
+        <div class="card">
+          <h3>Aggiungi un tuo Link Personale</h3>
+          <input type="text" id="custom-link-title" placeholder="Nome Tool (es. Il mio Calcolatore)">
+          <input type="url" id="custom-link-url" placeholder="https://...">
+          <button class="btn-main" onclick="addCustomLink()">Salva Link</button>
+        </div>
+
+        <div class="card">
+          <h3>🔗 I Tuoi Link Personalizzati</h3>
+          <ul class="link-list" id="user-links-list"></ul>
+        </div>
+
+        <div class="card">
+          <h3>🖨️ Stampa 3D</h3>
+          <ul class="link-list">
+            <li><a href="https://www.thingiverse.com" target="_blank">Thingiverse</a></li>
+            <li><a href="https://www.printables.com" target="_blank">Printables</a></li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>⚡ Laser & Falegnameria</h3>
+          <ul class="link-list">
+            <li><a href="https://www.boxes.py" target="_blank">Boxes.py</a></li>
+            <li><a href="https://makercase.com" target="_blank">MakerCase</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
   </div>
-
-  <!-- SEZIONE TOOL & RISORSE -->
-  <div id="sec-tools" class="section">
-    <h2>Tool & Risorse Utili</h2>
-
-    <div class="card">
-      <h3>🖨️ Stampa 3D</h3>
-      <ul class="link-list">
-        <li><a href="https://www.thingiverse.com" target="_blank">Thingiverse - Modelli 3D</a></li>
-        <li><a href="https://www.printables.com" target="_blank">Printables - Modelli 3D</a></li>
-        <li><a href="https://cults3d.com" target="_blank">Cults3D - Modelli 3D</a></li>
-      </ul>
-    </div>
-
-    <div class="card">
-      <h3>⚡ Taglio Laser</h3>
-      <ul class="link-list">
-        <li><a href="https://www.boxes.py" target="_blank">Boxes.py - Generatore Scatole</a></li>
-        <li><a href="https://makercase.com" target="_blank">MakerCase - Box Generator</a></li>
-        <li><a href="https://dafont.com" target="_blank">DaFont - Font per Incisione</a></li>
-      </ul>
-    </div>
-
-    <div class="card">
-      <h3>🪵 Falegnameria</h3>
-      <ul class="link-list">
-        <li><a href="https://www.opticut.fr" target="_blank">OptiCut - Ottimizzazione Tagli Legno</a></li>
-        <li><a href="https://www.woodbin.com/calcs/sagulator/" target="_blank">The Sagulator - Calcolo Flessione Ripiani</a></li>
-      </ul>
-    </div>
-  </div>
-
-  <nav>
-    <button id="nav-projects" class="active" onclick="switchTab('projects')">Progetti</button>
-    <button id="nav-tools" onclick="switchTab('tools')">Tool & Risorse</button>
-  </nav>
 
   <script>
-    let projects = JSON.parse(localStorage.getItem('maker_projects') || '[]');
-    let currentEditId = null;
+    const slider = document.getElementById('slider');
+    const navItems = document.querySelectorAll('.nav-item');
+    let currentSlide = 0;
 
-    function switchTab(tab) {
-      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-      document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-      
-      document.getElementById(`sec-${tab}`).classList.add('active');
-      document.getElementById(`nav-${tab}`).classList.add('active');
-    }
-
-    function renderProjects() {
-      const container = document.getElementById('projects-list');
-      container.innerHTML = '';
-      if(projects.length === 0) {
-        container.innerHTML = '<p style="color:var(--text-dim); text-align:center;">Nessun progetto salvato.</p>';
-        return;
+    // Gestione Slider con Scroll Sync
+    slider.addEventListener('scroll', () => {
+      const index = Math.round(slider.scrollLeft / window.innerWidth);
+      if(index !== currentSlide) {
+        currentSlide = index;
+        updateNav();
       }
-      projects.forEach(p => {
-        const total = p.materials.reduce((sum, m) => sum + (parseFloat(m.price) || 0), 0);
-        const card = document.createElement('div');
-        card.className = 'card project-item';
-        card.innerHTML = `
-          <div>
-            <strong>${p.name}</strong> <br>
-            <small style="color:var(--text-dim);">${p.cat}</small>
-          </div>
-          <div>
-            <span class="cost-badge">€ ${total.toFixed(2)}</span>
-            <button onclick="deleteProject(${p.id})" style="background:none; border:none; color:#ff4d4d; margin-left:10px; cursor:pointer;">🗑️</button>
-          </div>
-        `;
-        container.appendChild(card);
+    });
+
+    function updateNav() {
+      navItems.forEach((item, idx) => {
+        item.classList.toggle('active', idx === currentSlide);
       });
     }
 
-    function showNewProjectForm() {
-      currentEditId = null;
-      document.getElementById('p-name').value = '';
-      document.getElementById('p-notes').value = '';
-      document.getElementById('materials-container').innerHTML = '';
-      document.getElementById('project-form').style.display = 'block';
+    function scrollToSlide(index) {
+      currentSlide = index;
+      slider.scrollTo({ left: window.innerWidth * index, behavior: 'smooth' });
+      updateNav();
     }
 
-    function hideProjectForm() {
-      document.getElementById('project-form').style.display = 'none';
+    function moveSlide(direction) {
+      let nextSlide = currentSlide + direction;
+      if(nextSlide >= 0 && nextSlide < 3) {
+        scrollToSlide(nextSlide);
+      }
     }
 
-    function addMaterialRow(name = '', price = '') {
-      const container = document.getElementById('materials-container');
-      const div = document.createElement('div');
-      div.className = 'material-row';
-      div.innerHTML = `
-        <input type="text" placeholder="Materiale" value="${name}" class="m-name" style="flex:2;">
-        <input type="number" placeholder="€" value="${price}" class="m-price" style="flex:1;">
+    // --- PROGETTI ---
+    let projects = JSON.parse(localStorage.getItem('maker_projects') || '[]');
+
+    function toggleProjectForm() {
+      const form = document.getElementById('project-form');
+      form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function checkCustomCategory(val) {
+      document.getElementById('p-custom-cat').style.display = val === 'Altro' ? 'block' : 'none';
+    }
+
+    function addMaterialRow(name = '', cost = '') {
+      const tbody = document.getElementById('materials-list');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><input type="text" class="m-name" value="${name}" placeholder="Es. Tavola Abete"></td>
+        <td><input type="number" class="m-cost" value="${cost}" placeholder="0.00"></td>
+        <td><button onclick="this.closest('tr').remove()" style="background:none; border:none; color:#ff4d4d; cursor:pointer;">✕</button></td>
       `;
-      container.appendChild(div);
+      tbody.appendChild(tr);
     }
 
     function saveProject() {
       const name = document.getElementById('p-name').value;
       if(!name) return alert('Inserisci il nome del progetto');
-      
-      const cat = document.getElementById('p-cat').value;
+
+      let cat = document.getElementById('p-cat').value;
+      if(cat === 'Altro') {
+        cat = document.getElementById('p-custom-cat').value || 'Altro';
+      }
+
       const notes = document.getElementById('p-notes').value;
-      
-      const matNames = document.querySelectorAll('.m-name');
-      const matPrices = document.querySelectorAll('.m-price');
+      const mNames = document.querySelectorAll('.m-name');
+      const mCosts = document.querySelectorAll('.m-cost');
+
       const materials = [];
-      
-      matNames.forEach((el, index) => {
+      mNames.forEach((el, i) => {
         if(el.value) {
-          materials.push({ name: el.value, price: matPrices[index].value });
+          materials.push({ name: el.value, cost: parseFloat(mCosts[i].value) || 0 });
         }
       });
 
-      const newProject = { id: Date.now(), name, cat, notes, materials };
-      projects.push(newProject);
+      projects.push({ id: Date.now(), name, cat, notes, materials });
       localStorage.setItem('maker_projects', JSON.stringify(projects));
-      
-      hideProjectForm();
+
+      // Reset Form
+      document.getElementById('p-name').value = '';
+      document.getElementById('p-notes').value = '';
+      document.getElementById('materials-list').innerHTML = '';
+      toggleProjectForm();
       renderProjects();
     }
 
+    function renderProjects() {
+      const container = document.getElementById('projects-container');
+      container.innerHTML = '';
+      if(projects.length === 0) {
+        container.innerHTML = '<p style="color:var(--text-dim); text-align:center;">Nessun progetto salvato.</p>';
+        return;
+      }
+
+      projects.forEach(p => {
+        const totalCost = p.materials.reduce((sum, m) => sum + m.cost, 0);
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h3>${p.name}</h3>
+            <span style="background:var(--accent); color:#fff; padding:2px 8px; border-radius:10px; font-size:0.8rem;">${p.cat}</span>
+          </div>
+          <p style="color:var(--text-dim); font-size:0.9rem; margin-bottom:10px;">${p.notes}</p>
+          <p><strong>Costo Totale: € ${totalCost.toFixed(2)}</strong></p>
+          <button onclick="deleteProject(${p.id})" style="background:none; border:none; color:#ff4d4d; text-align:right; cursor:pointer; width:auto; padding:5px 0;">Cancella</button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
     function deleteProject(id) {
-      if(confirm('Vuoi cancellare questo progetto?')) {
+      if(confirm('Vuoi davvero cancellare questo progetto?')) {
         projects = projects.filter(p => p.id !== id);
         localStorage.setItem('maker_projects', JSON.stringify(projects));
         renderProjects();
       }
     }
 
+    // --- NOTEPAD ---
+    const notepad = document.getElementById('notepad-area');
+    notepad.value = localStorage.getItem('maker_notepad') || '';
+
+    function saveNote() {
+      localStorage.setItem('maker_notepad', notepad.value);
+    }
+
+    // --- LINK UTENTE ---
+    let userLinks = JSON.parse(localStorage.getItem('maker_user_links') || '[]');
+
+    function addCustomLink() {
+      const title = document.getElementById('custom-link-title').value;
+      const url = document.getElementById('custom-link-url').value;
+
+      if(!title || !url) return alert('Inserisci sia il nome che l\'URL');
+
+      userLinks.push({ title, url });
+      localStorage.setItem('maker_user_links', JSON.stringify(userLinks));
+
+      document.getElementById('custom-link-title').value = '';
+      document.getElementById('custom-link-url').value = '';
+      renderUserLinks();
+    }
+
+    function renderUserLinks() {
+      const list = document.getElementById('user-links-list');
+      list.innerHTML = '';
+      if(userLinks.length === 0) {
+        list.innerHTML = '<li style="color:var(--text-dim);">Nessun link personalizzato aggiunto.</li>';
+        return;
+      }
+
+      userLinks.forEach((l, i) => {
+        const li = document.createElement('li');
+        li.style.display = 'flex';
+        li.style.justifyContent = 'space-between';
+        li.innerHTML = `
+          <a href="${l.url}" target="_blank" style="flex:1; margin-right:5px;">${l.title}</a>
+          <button onclick="deleteUserLink(${i})" style="width:auto; background:#2a2a2a; border:1px solid var(--border); color:#ff4d4d;">✕</button>
+        `;
+        list.appendChild(li);
+      });
+    }
+
+    function deleteUserLink(index) {
+      userLinks.splice(index, 1);
+      localStorage.setItem('maker_user_links', JSON.stringify(userLinks));
+      renderUserLinks();
+    }
+
+    // Inizializzazione
     renderProjects();
+    renderUserLinks();
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
   </script>
 </body>
 </html>
