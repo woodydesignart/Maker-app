@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maker Notes & Tools</title>
+  <style>
+    :root {
+      --bg: #121212;
+      --card-bg: #1e1e1e;
+      --accent: #ff6b00;
+      --text: #e0e0e0;
+      --text-dim: #a0a0a0;
+      --border: #333;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding-bottom: 70px; }
+    
+    /* Header e Navigazione */
+    header { background-color: var(--card-bg); padding: 15px; text-align: center; font-size: 1.2rem; font-weight: bold; border-bottom: 1px solid var(--border); color: var(--accent); }
+    nav { position: fixed; bottom: 0; width: 100%; background: var(--card-bg); display: flex; border-top: 1px solid var(--border); }
+    nav button { flex: 1; padding: 12px; background: none; border: none; color: var(--text-dim); font-size: 0.9rem; font-weight: bold; cursor: pointer; }
+    nav button.active { color: var(--accent); border-top: 2px solid var(--accent); }
+    
+    /* Sezioni */
+    .section { display: none; padding: 15px; max-width: 600px; margin: 0 auto; }
+    .section.active { display: block; }
+    
+    /* Card e Form */
+    .card { background: var(--card-bg); padding: 15px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 15px; }
+    h2 { margin-bottom: 15px; color: var(--accent); font-size: 1.1rem; }
+    h3 { margin-bottom: 10px; font-size: 1rem; color: #fff; }
+    input, select, textarea, button.btn { width: 100%; padding: 10px; margin-bottom: 10px; background: #2a2a2a; border: 1px solid var(--border); color: #fff; border-radius: 5px; }
+    button.btn-main { background: var(--accent); color: #fff; font-weight: bold; border: none; cursor: pointer; margin-top: 5px; }
+    
+    /* Tabelle e Liste */
+    .link-list { list-style: none; }
+    .link-list li { margin-bottom: 8px; }
+    .link-list a { color: #4da6ff; text-decoration: none; display: block; background: #2a2a2a; padding: 10px; border-radius: 5px; border: 1px solid var(--border); }
+    .link-list a:hover { background: #333; }
+    .project-item { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+    .cost-badge { background: var(--accent); color: #fff; padding: 3px 8px; border-radius: 12px; font-size: 0.8rem; }
+    .material-row { display: flex; gap: 5px; margin-bottom: 5px; }
+    .material-row input { margin-bottom: 0; }
+  </style>
+</head>
+<body>
+
+  <header>Maker App 🛠️</header>
+
+  <!-- SEZIONE PROGETTI -->
+  <div id="sec-projects" class="section active">
+    <h2>I Miei Progetti</h2>
+    <button class="btn btn-main" onclick="showNewProjectForm()">+ Nuovo Progetto</button>
+
+    <div id="project-form" class="card" style="display:none;">
+      <h3>Crea / Modifica Progetto</h3>
+      <input type="text" id="p-name" placeholder="Nome del progetto">
+      <select id="p-cat">
+        <option value="Stampa 3D">Stampa 3D</option>
+        <option value="Taglio Laser">Taglio Laser</option>
+        <option value="Falegnameria">Falegnameria</option>
+        <option value="Misto">Misto/Altro</option>
+      </select>
+      <textarea id="p-notes" placeholder="Note tecniche o parametri di lavorazione..." rows="3"></textarea>
+      
+      <h4>Materiali e Costi</h4>
+      <div id="materials-container"></div>
+      <button class="btn" onclick="addMaterialRow()">+ Aggiungi Materiale</button>
+      
+      <button class="btn btn-main" onclick="saveProject()">Salva Progetto</button>
+      <button class="btn" style="background:#555;" onclick="hideProjectForm()">Annulla</button>
+    </div>
+
+    <div id="projects-list"></div>
+  </div>
+
+  <!-- SEZIONE TOOL & RISORSE -->
+  <div id="sec-tools" class="section">
+    <h2>Tool & Risorse Utili</h2>
+
+    <div class="card">
+      <h3>🖨️ Stampa 3D</h3>
+      <ul class="link-list">
+        <li><a href="https://www.thingiverse.com" target="_blank">Thingiverse - Modelli 3D</a></li>
+        <li><a href="https://www.printables.com" target="_blank">Printables - Modelli 3D</a></li>
+        <li><a href="https://cults3d.com" target="_blank">Cults3D - Modelli 3D</a></li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>⚡ Taglio Laser</h3>
+      <ul class="link-list">
+        <li><a href="https://www.boxes.py" target="_blank">Boxes.py - Generatore Scatole</a></li>
+        <li><a href="https://makercase.com" target="_blank">MakerCase - Box Generator</a></li>
+        <li><a href="https://dafont.com" target="_blank">DaFont - Font per Incisione</a></li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>🪵 Falegnameria</h3>
+      <ul class="link-list">
+        <li><a href="https://www.opticut.fr" target="_blank">OptiCut - Ottimizzazione Tagli Legno</a></li>
+        <li><a href="https://www.woodbin.com/calcs/sagulator/" target="_blank">The Sagulator - Calcolo Flessione Ripiani</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <nav>
+    <button id="nav-projects" class="active" onclick="switchTab('projects')">Progetti</button>
+    <button id="nav-tools" onclick="switchTab('tools')">Tool & Risorse</button>
+  </nav>
+
+  <script>
+    let projects = JSON.parse(localStorage.getItem('maker_projects') || '[]');
+    let currentEditId = null;
+
+    function switchTab(tab) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+      
+      document.getElementById(`sec-${tab}`).classList.add('active');
+      document.getElementById(`nav-${tab}`).classList.add('active');
+    }
+
+    function renderProjects() {
+      const container = document.getElementById('projects-list');
+      container.innerHTML = '';
+      if(projects.length === 0) {
+        container.innerHTML = '<p style="color:var(--text-dim); text-align:center;">Nessun progetto salvato.</p>';
+        return;
+      }
+      projects.forEach(p => {
+        const total = p.materials.reduce((sum, m) => sum + (parseFloat(m.price) || 0), 0);
+        const card = document.createElement('div');
+        card.className = 'card project-item';
+        card.innerHTML = `
+          <div>
+            <strong>${p.name}</strong> <br>
+            <small style="color:var(--text-dim);">${p.cat}</small>
+          </div>
+          <div>
+            <span class="cost-badge">€ ${total.toFixed(2)}</span>
+            <button onclick="deleteProject(${p.id})" style="background:none; border:none; color:#ff4d4d; margin-left:10px; cursor:pointer;">🗑️</button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function showNewProjectForm() {
+      currentEditId = null;
+      document.getElementById('p-name').value = '';
+      document.getElementById('p-notes').value = '';
+      document.getElementById('materials-container').innerHTML = '';
+      document.getElementById('project-form').style.display = 'block';
+    }
+
+    function hideProjectForm() {
+      document.getElementById('project-form').style.display = 'none';
+    }
+
+    function addMaterialRow(name = '', price = '') {
+      const container = document.getElementById('materials-container');
+      const div = document.createElement('div');
+      div.className = 'material-row';
+      div.innerHTML = `
+        <input type="text" placeholder="Materiale" value="${name}" class="m-name" style="flex:2;">
+        <input type="number" placeholder="€" value="${price}" class="m-price" style="flex:1;">
+      `;
+      container.appendChild(div);
+    }
+
+    function saveProject() {
+      const name = document.getElementById('p-name').value;
+      if(!name) return alert('Inserisci il nome del progetto');
+      
+      const cat = document.getElementById('p-cat').value;
+      const notes = document.getElementById('p-notes').value;
+      
+      const matNames = document.querySelectorAll('.m-name');
+      const matPrices = document.querySelectorAll('.m-price');
+      const materials = [];
+      
+      matNames.forEach((el, index) => {
+        if(el.value) {
+          materials.push({ name: el.value, price: matPrices[index].value });
+        }
+      });
+
+      const newProject = { id: Date.now(), name, cat, notes, materials };
+      projects.push(newProject);
+      localStorage.setItem('maker_projects', JSON.stringify(projects));
+      
+      hideProjectForm();
+      renderProjects();
+    }
+
+    function deleteProject(id) {
+      if(confirm('Vuoi cancellare questo progetto?')) {
+        projects = projects.filter(p => p.id !== id);
+        localStorage.setItem('maker_projects', JSON.stringify(projects));
+        renderProjects();
+      }
+    }
+
+    renderProjects();
+  </script>
+</body>
+</html>
