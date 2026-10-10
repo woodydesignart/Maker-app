@@ -243,10 +243,12 @@
           <h3>Aggiungi nuovo link</h3>
           <input type="text" id="custom-link-title" placeholder="Nome Tool (es. Calcolatore Viti)">
           <input type="url" id="custom-link-url" placeholder="https://...">
+          <input type="text" id="custom-link-desc" placeholder="Breve descrizione (es. Calcola lunghezze)">
           
           <select id="custom-link-cat" onchange="checkToolCustomCategory(this.value)">
             <option value="Stampa 3D">Stampa 3D</option>
-            <option value="Laser & Falegnameria">Laser & Falegnameria</option>
+            <option value="Laser Cut">Laser Cut</option>
+            <option value="Falegnameria">Falegnameria</option>
             <option value="Altro">Altra Categoria...</option>
           </select>
           <input type="text" id="custom-link-custom-cat" placeholder="Nome nuova categoria..." style="display:none;">
@@ -262,18 +264,18 @@
 
   <script>
     // ==========================================
-    // 📌 LINK PREDEFINITI
+    // 📌 LINK PREDEFINITI CON DESCRIZIONE
     // ==========================================
     const defaultTools = [
-      { id: 1, title: "Makerworld", url: "https://makerworld.com/en", cat: "Stampa 3D", default: true },
-      { id: 2, title: "Printables", url: "https://www.printables.com", cat: "Stampa 3D", default: true },
-      { id: 3, title: "Boxes.py", url: "https://www.boxes.py", cat: "Laser Cut", default: true },
-      { id: 4, title: "MakerCase", url: "https://makercase.com", cat: "Laser Cut", default: true },
-      { id: 5, title: "Gridfinity", url: "https://gridfinity.perplexinglabs.com/", cat: "Stampa 3D", default: true },
-      { id: 6, title: "Tooltrace", url: "https://www.tooltrace.ai", cat: "Stampa 3D", default: true },
-      { id: 7, title: "3axis", url: "https://3axis.co", cat: "Laser Cut", default: true },
-      { id: 8, title: "Cutlistoptimizer", url: "https://www.cutlistoptimizer.com", cat: "Falegnameria", default: true },
-      { id: 9, title: "Pacdora", url: "https://www.pacdora.com/resource/box-cut-out-pattern", cat: "Laser Cut", default: true }
+      { id: 1, title: "Makerworld", url: "https://makerworld.com/en", cat: "Stampa 3D", desc: "Modelli 3D e stampa cloud", default: true },
+      { id: 2, title: "Printables", url: "https://www.printables.com", cat: "Stampa 3D", desc: "Community e modelli per stampa 3D", default: true },
+      { id: 3, title: "Boxes.py", url: "https://www.boxes.py", cat: "Laser Cut", desc: "Generatore scatole parametrizzate", default: true },
+      { id: 4, title: "MakerCase", url: "https://makercase.com", cat: "Laser Cut", desc: "Progettazione custodie laser", default: true },
+      { id: 5, title: "Gridfinity", url: "https://gridfinity.perplexinglabs.com/", cat: "Stampa 3D", desc: "Sistema modulare per organizzare cassetti", default: true },
+      { id: 6, title: "Tooltrace", url: "https://www.tooltrace.ai", cat: "Stampa 3D", desc: "Ricerca e confronto strumenti", default: true },
+      { id: 7, title: "3axis", url: "https://3axis.co", cat: "Laser Cut", desc: "Vettori e file gratuiti per laser", default: true },
+      { id: 8, title: "Cutlistoptimizer", url: "https://www.cutlistoptimizer.com", cat: "Falegnameria", desc: "Ottimizzazione tagli pannelli", default: true },
+      { id: 9, title: "Pacdora", url: "https://www.pacdora.com/resource/box-cut-out-pattern", cat: "Laser Cut", desc: "Die-cut e mockup 3D per packaging", default: true }
     ];
 
     const slider = document.getElementById('slider');
@@ -550,6 +552,7 @@
     function addCustomLink() {
       const title = document.getElementById('custom-link-title').value;
       const url = document.getElementById('custom-link-url').value;
+      const desc = document.getElementById('custom-link-desc').value;
       let cat = document.getElementById('custom-link-cat').value;
       
       if(cat === 'Altro') {
@@ -558,11 +561,12 @@
 
       if(!title || !url) return alert('Inserisci sia il nome che l\'URL');
 
-      userTools.push({ id: Date.now(), title, url, cat, default: false });
+      userTools.push({ id: Date.now(), title, url, desc, cat, default: false });
       localStorage.setItem('maker_user_tools', JSON.stringify(userTools));
 
       document.getElementById('custom-link-title').value = '';
       document.getElementById('custom-link-url').value = '';
+      document.getElementById('custom-link-desc').value = '';
       document.getElementById('custom-link-custom-cat').value = '';
       document.getElementById('custom-link-cat').value = 'Stampa 3D';
       document.getElementById('custom-link-custom-cat').style.display = 'none';
@@ -616,7 +620,10 @@
         catTools.forEach(t => {
           listHtml += `
             <li>
-              <a href="${t.url}" target="_blank">${t.title}</a>
+              <div style="flex: 1; margin-right: 5px; overflow: hidden;">
+                <a href="${t.url}" target="_blank" style="font-weight: 600; display: block; margin-bottom: 2px;">${t.title}</a>
+                ${t.desc ? `<span style="font-size: 0.75rem; color: var(--text-dim); display: block; line-height: 1.2;">${t.desc}</span>` : ''}
+              </div>
               ${!t.default ? `<button type="button" onclick="deleteUserTool(${t.id})" style="width:auto; background:none; border:none; color:#ff4d4d; padding:2px 6px; font-size:0.85rem; cursor:pointer;">✕</button>` : ''}
             </li>
           `;
