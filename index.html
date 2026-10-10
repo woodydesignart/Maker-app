@@ -53,11 +53,12 @@
       border-bottom-color: var(--accent);
     }
 
+    /* 55px (header) + circa 30px di distacco extra = 85px */
     .slider-container {
       display: flex;
       width: 100vw;
       height: 100vh;
-      padding-top: 55px;
+      padding-top: 85px; 
       overflow-x: auto;
       scroll-snap-type: x mandatory;
       scroll-behavior: smooth;
@@ -70,7 +71,7 @@
       width: 100vw;
       height: 100%;
       scroll-snap-align: start;
-      padding: 20px 15px 80px 15px;
+      padding: 0 15px 90px 15px;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
     }
@@ -109,7 +110,7 @@
 
     #notepad-area {
       width: 100%;
-      height: calc(100vh - 140px);
+      height: calc(100vh - 170px);
       background: var(--card-bg);
       color: #fff;
       border: 1px solid var(--border);
@@ -217,7 +218,6 @@
           <button class="btn-main" onclick="addCustomLink()">Aggiungi Link</button>
         </div>
 
-        <!-- Container Dinamico Categorie e Link -->
         <div id="tools-categories-container"></div>
       </div>
     </div>
@@ -308,204 +308,4 @@
       const materials = [];
       mNames.forEach((el, i) => {
         if(el.value) {
-          materials.push({ name: el.value, cost: parseFloat(mCosts[i].value) || 0 });
-        }
-      });
-
-      if (id) {
-        projects = projects.map(p => p.id == id ? { id: Number(id), name, cat, notes, materials } : p);
-      } else {
-        projects.push({ id: Date.now(), name, cat, notes, materials });
-      }
-
-      localStorage.setItem('maker_projects', JSON.stringify(projects));
-      hideProjectForm();
-      renderProjects();
-    }
-
-    function editProject(id) {
-      const p = projects.find(item => item.id == id);
-      if(!p) return;
-
-      document.getElementById('form-title').innerText = "Modifica Progetto";
-      document.getElementById('p-id').value = p.id;
-      document.getElementById('p-name').value = p.name;
-      
-      const selectCat = document.getElementById('p-cat');
-      const standardCats = ['Falegnameria', 'Metallo', 'Stampa 3D', 'Laser'];
-      if(standardCats.includes(p.cat)) {
-        selectCat.value = p.cat;
-        document.getElementById('p-custom-cat').style.display = 'none';
-        document.getElementById('p-custom-cat').value = '';
-      } else {
-        selectCat.value = 'Altro';
-        document.getElementById('p-custom-cat').style.display = 'block';
-        document.getElementById('p-custom-cat').value = p.cat;
-      }
-
-      document.getElementById('p-notes').value = p.notes || '';
-      
-      const tbody = document.getElementById('materials-list');
-      tbody.innerHTML = '';
-      if(p.materials) {
-        p.materials.forEach(m => addMaterialRow(m.name, m.cost));
-      }
-
-      document.getElementById('project-form').style.display = 'block';
-      document.getElementById('new-proj-btn').style.display = 'none';
-      document.getElementById('slide-0').scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function renderProjects() {
-      const container = document.getElementById('projects-container');
-      container.innerHTML = '';
-      if(projects.length === 0) {
-        container.innerHTML = '<p style="color:var(--text-dim); text-align:center; margin-top:20px;">Nessun progetto salvato.</p>';
-        return;
-      }
-
-      projects.forEach(p => {
-        const totalCost = p.materials ? p.materials.reduce((sum, m) => sum + m.cost, 0) : 0;
-        const card = document.createElement('div');
-        card.className = 'card project-card';
-        card.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
-            <h3 style="margin-bottom:0;">${p.name}</h3>
-            <span style="background:var(--accent); color:#fff; padding:2px 8px; border-radius:10px; font-size:0.8rem;">${p.cat}</span>
-          </div>
-          <p style="color:var(--text-dim); font-size:0.85rem; margin-bottom:6px; white-space: pre-wrap;">${p.notes ? p.notes.substring(0, 60) + (p.notes.length > 60 ? '...' : '') : 'Nessuna nota'}</p>
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <strong style="color:var(--text); font-size:0.9rem;">Costo: € ${totalCost.toFixed(2)}</strong>
-            <div>
-              <button type="button" onclick="event.stopPropagation(); editProject(${p.id})" style="width:auto; background:#333; padding:4px 8px; font-size:0.8rem; margin-right:4px;">Modifica</button>
-              <button type="button" onclick="event.stopPropagation(); deleteProject(${p.id})" style="width:auto; background:none; border:none; color:#ff4d4d; padding:4px; font-size:0.85rem; cursor:pointer;">🗑️</button>
-            </div>
-          </div>
-        `;
-        card.onclick = () => editProject(p.id);
-        container.appendChild(card);
-      });
-    }
-
-    function deleteProject(id) {
-      if(confirm('Vuoi davvero cancellare questo progetto?')) {
-        projects = projects.filter(p => p.id !== id);
-        localStorage.setItem('maker_projects', JSON.stringify(projects));
-        renderProjects();
-        hideProjectForm();
-      }
-    }
-
-    // --- NOTEPAD ---
-    const notepad = document.getElementById('notepad-area');
-    notepad.value = localStorage.getItem('maker_notepad') || '';
-
-    function saveNote() {
-      localStorage.setItem('maker_notepad', notepad.value);
-    }
-
-    // --- TOOLS E LINK ---
-    // Link predefiniti di base
-    const defaultTools = [
-      { id: 1, title: "Thingiverse", url: "https://www.thingiverse.com", cat: "Stampa 3D", default: true },
-      { id: 2, title: "Printables", url: "https://www.printables.com", cat: "Stampa 3D", default: true },
-      { id: 3, title: "Boxes.py", url: "https://www.boxes.py", cat: "Laser & Falegnameria", default: true },
-      { id: 4, title: "MakerCase", url: "https://makercase.com", cat: "Laser & Falegnameria", default: true }
-    ];
-
-    let userTools = JSON.parse(localStorage.getItem('maker_user_tools') || '[]');
-
-    function checkToolCustomCategory(val) {
-      document.getElementById('custom-link-custom-cat').style.display = val === 'Altro' ? 'block' : 'none';
-    }
-
-    function addCustomLink() {
-      const title = document.getElementById('custom-link-title').value;
-      const url = document.getElementById('custom-link-url').value;
-      let cat = document.getElementById('custom-link-cat').value;
-      
-      if(cat === 'Altro') {
-        cat = document.getElementById('custom-link-custom-cat').value || 'Altro';
-      }
-
-      if(!title || !url) return alert('Inserisci sia il nome che l\'URL');
-
-      userTools.push({ id: Date.now(), title, url, cat, default: false });
-      localStorage.setItem('maker_user_tools', JSON.stringify(userTools));
-
-      document.getElementById('custom-link-title').value = '';
-      document.getElementById('custom-link-url').value = '';
-      document.getElementById('custom-link-custom-cat').value = '';
-      document.getElementById('custom-link-cat').value = 'Stampa 3D';
-      document.getElementById('custom-link-custom-cat').style.display = 'none';
-
-      renderTools();
-      updateCategoryDropdown();
-    }
-
-    function deleteUserTool(id) {
-      if(confirm('Vuoi rimuovere questo link?')) {
-        userTools = userTools.filter(t => t.id !== id);
-        localStorage.setItem('maker_user_tools', JSON.stringify(userTools));
-        renderTools();
-        updateCategoryDropdown();
-      }
-    }
-
-    function updateCategoryDropdown() {
-      const select = document.getElementById('custom-link-cat');
-      const currentVal = select.value;
-      
-      // Raccoglie tutte le categorie uniche attuali
-      const allTools = [...defaultTools, ...userTools];
-      const categories = [...new Set(allTools.map(t => t.cat))];
-
-      let html = '';
-      categories.forEach(c => {
-        html += `<option value="${c}">${c}</option>`;
-      });
-      html += `<option value="Altro">Altra Categoria...</option>`;
-      
-      select.innerHTML = html;
-      select.value = categories.includes(currentVal) ? currentVal : categories[0];
-    }
-
-    function renderTools() {
-      const container = document.getElementById('tools-categories-container');
-      container.innerHTML = '';
-
-      const allTools = [...defaultTools, ...userTools];
-      const categories = [...new Set(allTools.map(t => t.cat))];
-
-      categories.forEach(cat => {
-        const catTools = allTools.filter(t => t.cat === cat);
-        
-        const card = document.createElement('div');
-        card.className = 'card';
-        
-        let listHtml = `<ul class="link-list">`;
-        catTools.forEach(t => {
-          listHtml += `
-            <li>
-              <a href="${t.url}" target="_blank">${t.title}</a>
-              ${!t.default ? `<button type="button" onclick="deleteUserTool(${t.id})" style="width:auto; background:none; border:none; color:#ff4d4d; padding:2px 6px; font-size:0.85rem; cursor:pointer;">✕</button>` : ''}
-            </li>
-          `;
-        });
-        listHtml += `</ul>`;
-
-        card.innerHTML = `<h3>📌 ${cat}</h3>${listHtml}`;
-        container.appendChild(card);
-      });
-    }
-
-    renderProjects();
-    renderTools();
-    updateCategoryDropdown();
-
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js');
-    }
-  </script>
-</body>
-</html>
+          materials.push({ name: el.value, cost:
