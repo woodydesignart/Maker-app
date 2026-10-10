@@ -25,7 +25,6 @@
       overflow: hidden;
     }
 
-    /* Header fisso ma con layout pulito */
     header {
       position: fixed;
       top: 0; left: 0; right: 0;
@@ -54,12 +53,11 @@
       border-bottom-color: var(--accent);
     }
 
-    /* Container Slider posizionato esattamente sotto l'header */
     .slider-container {
       display: flex;
       width: 100vw;
       height: 100vh;
-      padding-top: 55px; /* Spazio esatto per l'header */
+      padding-top: 55px;
       overflow-x: auto;
       scroll-snap-type: x mandatory;
       scroll-behavior: smooth;
@@ -67,13 +65,12 @@
     }
     .slider-container::-webkit-scrollbar { display: none; }
 
-    /* Singola Sezione */
     .slide-section {
       flex: 0 0 100vw;
       width: 100vw;
       height: 100%;
       scroll-snap-align: start;
-      padding: 20px 15px 80px 15px; /* Padding bottom ampio per evitare tagli sul fondo */
+      padding: 20px 15px 80px 15px;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
     }
@@ -89,10 +86,6 @@
       border-radius: 8px;
       border: 1px solid var(--border);
       margin-bottom: 15px;
-    }
-
-    #project-form {
-      margin-bottom: 20px;
     }
 
     h2 { color: var(--accent); margin-bottom: 12px; font-size: 1.1rem; }
@@ -114,7 +107,6 @@
     .mat-table th { background: #252525; color: var(--accent); font-size: 0.8rem; }
     .mat-table input { margin-bottom: 0; }
 
-    /* Notepad a tutta altezza utile nello spazio disponibile */
     #notepad-area {
       width: 100%;
       height: calc(100vh - 140px);
@@ -129,11 +121,9 @@
     }
 
     .link-list { list-style: none; }
-    .link-list li { margin-bottom: 8px; }
+    .link-list li { margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; background: #2a2a2a; border: 1px solid var(--border); border-radius: 5px; padding: 8px 10px; }
     .link-list a {
-      color: #4da6ff; text-decoration: none; display: block;
-      background: #2a2a2a; padding: 10px; border-radius: 5px;
-      border: 1px solid var(--border); font-size: 0.9rem;
+      color: #4da6ff; text-decoration: none; flex: 1; overflow: hidden; text-overflow: ellipsis; font-size: 0.9rem; margin-right: 5px;
     }
 
     .project-card {
@@ -162,7 +152,6 @@
         
         <button class="btn-main" id="new-proj-btn" onclick="toggleProjectForm()">+ Nuovo Progetto</button>
 
-        <!-- Form Nuovo/Modifica Progetto -->
         <div id="project-form" class="card" style="display:none;">
           <h3 id="form-title">Nuovo Progetto</h3>
           <input type="hidden" id="p-id" value="">
@@ -204,7 +193,7 @@
     <div class="slide-section" id="slide-1">
       <div class="content-box">
         <h2>Notepad Rapido</h2>
-        <textarea id="notepad-area" placeholder="Scrivi qui appunti veloci, quote, codici colore o promemoria..." oninput="saveNote()"></textarea>
+        <textarea id="notepad-area" placeholder="Scrivi appunti veloci" oninput="saveNote()"></textarea>
       </div>
     </div>
 
@@ -214,32 +203,22 @@
         <h2>Tools & Risorse</h2>
 
         <div class="card">
-          <h3>Aggiungi un tuo Link Personale</h3>
-          <input type="text" id="custom-link-title" placeholder="Nome Tool (es. Il mio Calcolatore)">
+          <h3>Aggiungi nuovo link</h3>
+          <input type="text" id="custom-link-title" placeholder="Nome Tool (es. Calcolatore Viti)">
           <input type="url" id="custom-link-url" placeholder="https://...">
-          <button class="btn-main" onclick="addCustomLink()">Salva Link</button>
+          
+          <select id="custom-link-cat" onchange="checkToolCustomCategory(this.value)">
+            <option value="Stampa 3D">Stampa 3D</option>
+            <option value="Laser & Falegnameria">Laser & Falegnameria</option>
+            <option value="Altro">Altra Categoria...</option>
+          </select>
+          <input type="text" id="custom-link-custom-cat" placeholder="Nome nuova categoria..." style="display:none;">
+
+          <button class="btn-main" onclick="addCustomLink()">Aggiungi Link</button>
         </div>
 
-        <div class="card">
-          <h3>🔗 I Tuoi Link Personalizzati</h3>
-          <ul class="link-list" id="user-links-list"></ul>
-        </div>
-
-        <div class="card">
-          <h3>🖨️ Stampa 3D</h3>
-          <ul class="link-list">
-            <li><a href="https://www.thingiverse.com" target="_blank">Thingiverse</a></li>
-            <li><a href="https://www.printables.com" target="_blank">Printables</a></li>
-          </ul>
-        </div>
-
-        <div class="card">
-          <h3>⚡ Laser & Falegnameria</h3>
-          <ul class="link-list">
-            <li><a href="https://www.boxes.py" target="_blank">Boxes.py</a></li>
-            <li><a href="https://makercase.com" target="_blank">MakerCase</a></li>
-          </ul>
-        </div>
+        <!-- Container Dinamico Categorie e Link -->
+        <div id="tools-categories-container"></div>
       </div>
     </div>
 
@@ -374,8 +353,6 @@
 
       document.getElementById('project-form').style.display = 'block';
       document.getElementById('new-proj-btn').style.display = 'none';
-      
-      // Fa scorrere la sezione in alto per mostrare il form aperto
       document.getElementById('slide-0').scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -427,51 +404,105 @@
       localStorage.setItem('maker_notepad', notepad.value);
     }
 
-    // --- LINK UTENTE ---
-    let userLinks = JSON.parse(localStorage.getItem('maker_user_links') || '[]');
+    // --- TOOLS E LINK ---
+    // Link predefiniti di base
+    const defaultTools = [
+      { id: 1, title: "Thingiverse", url: "https://www.thingiverse.com", cat: "Stampa 3D", default: true },
+      { id: 2, title: "Printables", url: "https://www.printables.com", cat: "Stampa 3D", default: true },
+      { id: 3, title: "Boxes.py", url: "https://www.boxes.py", cat: "Laser & Falegnameria", default: true },
+      { id: 4, title: "MakerCase", url: "https://makercase.com", cat: "Laser & Falegnameria", default: true }
+    ];
+
+    let userTools = JSON.parse(localStorage.getItem('maker_user_tools') || '[]');
+
+    function checkToolCustomCategory(val) {
+      document.getElementById('custom-link-custom-cat').style.display = val === 'Altro' ? 'block' : 'none';
+    }
 
     function addCustomLink() {
       const title = document.getElementById('custom-link-title').value;
       const url = document.getElementById('custom-link-url').value;
+      let cat = document.getElementById('custom-link-cat').value;
+      
+      if(cat === 'Altro') {
+        cat = document.getElementById('custom-link-custom-cat').value || 'Altro';
+      }
 
       if(!title || !url) return alert('Inserisci sia il nome che l\'URL');
 
-      userLinks.push({ title, url });
-      localStorage.setItem('maker_user_links', JSON.stringify(userLinks));
+      userTools.push({ id: Date.now(), title, url, cat, default: false });
+      localStorage.setItem('maker_user_tools', JSON.stringify(userTools));
 
       document.getElementById('custom-link-title').value = '';
       document.getElementById('custom-link-url').value = '';
-      renderUserLinks();
+      document.getElementById('custom-link-custom-cat').value = '';
+      document.getElementById('custom-link-cat').value = 'Stampa 3D';
+      document.getElementById('custom-link-custom-cat').style.display = 'none';
+
+      renderTools();
+      updateCategoryDropdown();
     }
 
-    function renderUserLinks() {
-      const list = document.getElementById('user-links-list');
-      list.innerHTML = '';
-      if(userLinks.length === 0) {
-        list.innerHTML = '<li style="color:var(--text-dim);">Nessun link personalizzato aggiunto.</li>';
-        return;
+    function deleteUserTool(id) {
+      if(confirm('Vuoi rimuovere questo link?')) {
+        userTools = userTools.filter(t => t.id !== id);
+        localStorage.setItem('maker_user_tools', JSON.stringify(userTools));
+        renderTools();
+        updateCategoryDropdown();
       }
+    }
 
-      userLinks.forEach((l, i) => {
-        const li = document.createElement('li');
-        li.style.display = 'flex';
-        li.style.justifyContent = 'space-between';
-        li.innerHTML = `
-          <a href="${l.url}" target="_blank" style="flex:1; margin-right:5px; overflow:hidden; text-overflow:ellipsis;">${l.title}</a>
-          <button type="button" onclick="deleteUserLink(${i})" style="width:auto; background:#2a2a2a; border:1px solid var(--border); color:#ff4d4d; padding: 4px 8px;">✕</button>
-        `;
-        list.appendChild(li);
+    function updateCategoryDropdown() {
+      const select = document.getElementById('custom-link-cat');
+      const currentVal = select.value;
+      
+      // Raccoglie tutte le categorie uniche attuali
+      const allTools = [...defaultTools, ...userTools];
+      const categories = [...new Set(allTools.map(t => t.cat))];
+
+      let html = '';
+      categories.forEach(c => {
+        html += `<option value="${c}">${c}</option>`;
+      });
+      html += `<option value="Altro">Altra Categoria...</option>`;
+      
+      select.innerHTML = html;
+      select.value = categories.includes(currentVal) ? currentVal : categories[0];
+    }
+
+    function renderTools() {
+      const container = document.getElementById('tools-categories-container');
+      container.innerHTML = '';
+
+      const allTools = [...defaultTools, ...userTools];
+      const categories = [...new Set(allTools.map(t => t.cat))];
+
+      categories.forEach(cat => {
+        const catTools = allTools.filter(t => t.cat === cat);
+        
+        const card = document.createElement('div');
+        card.className = 'card';
+        
+        let listHtml = `<ul class="link-list">`;
+        catTools.forEach(t => {
+          listHtml += `
+            <li>
+              <a href="${t.url}" target="_blank">${t.title}</a>
+              ${!t.default ? `<button type="button" onclick="deleteUserTool(${t.id})" style="width:auto; background:none; border:none; color:#ff4d4d; padding:2px 6px; font-size:0.85rem; cursor:pointer;">✕</button>` : ''}
+            </li>
+          `;
+        });
+        listHtml += `</ul>`;
+
+        card.innerHTML = `<h3>📌 ${cat}</h3>${listHtml}`;
+        container.appendChild(card);
       });
     }
 
-    function deleteUserLink(index) {
-      userLinks.splice(index, 1);
-      localStorage.setItem('maker_user_links', JSON.stringify(userLinks));
-      renderUserLinks();
-    }
-
     renderProjects();
-    renderUserLinks();
+    renderTools();
+    updateCategoryDropdown();
+
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js');
     }
