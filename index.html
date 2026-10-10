@@ -39,7 +39,6 @@
       padding-top: 6px;
     }
 
-    /* Aumentato lo spazio sotto il logo da 4px a 12px */
     .brand-logo {
       font-size: 1.4rem;
       font-weight: 700;
@@ -128,17 +127,12 @@
     .mat-table th { background: #252525; color: var(--accent); font-size: 0.8rem; }
     .mat-table input { margin-bottom: 0; }
 
-    #notepad-area {
-      width: 100%;
-      height: calc(100vh - 200px);
-      background: var(--card-bg);
-      color: #fff;
-      border: 1px solid var(--border);
-      padding: 12px;
-      font-size: 0.95rem;
-      line-height: 1.4;
-      resize: none;
-      border-radius: 8px;
+    .note-card {
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .note-card:hover {
+      border-color: var(--accent);
     }
 
     .link-list { list-style: none; }
@@ -218,8 +212,21 @@
     <!-- SEZIONE 2: NOTEPAD -->
     <div class="slide-section" id="slide-1">
       <div class="content-box">
-        <h2>Notepad Rapido</h2>
-        <textarea id="notepad-area" placeholder="Scrivi appunti veloci" oninput="saveNote()"></textarea>
+        <h2>Notepad</h2>
+        
+        <button class="btn-main" id="new-note-btn" onclick="toggleNoteForm()">+ Nuova Nota</button>
+
+        <div id="note-form" class="card" style="display:none;">
+          <h3 id="note-form-title">Nuova Nota</h3>
+          <input type="hidden" id="note-id" value="">
+          <input type="text" id="note-title" placeholder="Titolo della nota...">
+          <textarea id="note-content" placeholder="Scrivi il contenuto della nota..." rows="6" style="resize:vertical;"></textarea>
+
+          <button class="btn-main" onclick="saveNoteItem()">Salva Nota</button>
+          <button type="button" onclick="hideNoteForm()" style="background:#444;">Annulla</button>
+        </div>
+
+        <div id="notes-container"></div>
       </div>
     </div>
 
@@ -256,12 +263,10 @@
     const defaultTools = [
       { id: 1, title: "Makerworld", url: "https://makerworld.com/en", cat: "Stampa 3D", default: true },
       { id: 2, title: "Printables", url: "https://www.printables.com", cat: "Stampa 3D", default: true },
-      { id: 3, title: "Boxes.py", url: "https://www.boxes.py", cat: "Laser Cut", default: true },
-      { id: 4, title: "MakerCase", url: "https://makercase.com", cat: "Laser Cut", default: true },
+      { id: 3, title: "Boxes.py", url: "https://www.boxes.py", cat: "Laser & Falegnameria", default: true },
+      { id: 4, title: "MakerCase", url: "https://makercase.com", cat: "Laser & Falegnameria", default: true },
       { id: 5, title: "Gridfinity", url: "https://gridfinity.perplexinglabs.com/", cat: "Stampa 3D", default: true },
-      { id: 6, title: "Tooltrace", url: "https://www.tooltrace.ai/", cat: "Stampa 3D", default: true },
-      { id: 7, title: "cutlistoptimizer", url: "https://www.cutlistoptimizer.com//", cat: "Falegnameria", default: true },
-      { id: 7, title: "3axis", url: "https://3axis.co///", cat: "Laser Cut", default: true }
+      { id: 6, title: "Tooltrace", url: "https://www.tooltrace.ai/", cat: "Stampa 3D", default: true }
     ];
 
     const slider = document.getElementById('slider');
@@ -442,12 +447,102 @@
       }
     }
 
-    // --- NOTEPAD ---
-    const notepad = document.getElementById('notepad-area');
-    notepad.value = localStorage.getItem('maker_notepad') || '';
+    // --- NOTEPAD (NOTE MULTIPLE) ---
+    let notesList = [];
+    try {
+      notesList = JSON.parse(localStorage.getItem('maker_notes_list')) || [];
+    } catch(e) {
+      notesList = [];
+    }
 
-    function saveNote() {
-      localStorage.setItem('maker_notepad', notepad.value);
+    function toggleNoteForm() {
+      const form = document.getElementById('note-form');
+      if (form.style.display === 'none') {
+        document.getElementById('note-form-title').innerText = "Nuova Nota";
+        document.getElementById('note-id').value = '';
+        document.getElementById('note-title').value = '';
+        document.getElementById('note-content').value = '';
+        form.style.display = 'block';
+        document.getElementById('new-note-btn').style.display = 'none';
+      } else {
+        hideNoteForm();
+      }
+    }
+
+    function hideNoteForm() {
+      document.getElementById('note-form').style.display = 'none';
+      document.getElementById('new-note-btn').style.display = 'block';
+    }
+
+    function saveNoteItem() {
+      const id = document.getElementById('note-id').value;
+      const title = document.getElementById('note-title').value;
+      const content = document.getElementById('note-content').value;
+
+      if(!title && !content) return alert('Inserisci almeno un titolo o del testo nella nota');
+
+      const finalTitle = title || 'Nota senza titolo';
+
+      if (id) {
+        notesList = notesList.map(n => n.id == id ? { id: Number(id), title: finalTitle, content } : n);
+      } else {
+        notesList.push({ id: Date.now(), title: finalTitle, content });
+      }
+
+      localStorage.setItem('maker_notes_list', JSON.stringify(notesList));
+      hideNoteForm();
+      renderNotes();
+    }
+
+    function editNoteItem(id) {
+      const n = notesList.find(item => item.id == id);
+      if(!n) return;
+
+      document.getElementById('note-form-title').innerText = "Modifica Nota";
+      document.getElementById('note-id').value = n.id;
+      document.getElementById('note-title').value = n.title;
+      document.getElementById('note-content').value = n.content || '';
+
+      document.getElementById('note-form').style.display = 'block';
+      document.getElementById('new-note-btn').style.display = 'none';
+      document.getElementById('slide-1').scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function deleteNoteItem(id) {
+      if(confirm('Vuoi davvero cancellare questa nota?')) {
+        notesList = notesList.filter(n => n.id !== id);
+        localStorage.setItem('maker_notes_list', JSON.stringify(notesList));
+        renderNotes();
+        hideNoteForm();
+      }
+    }
+
+    function renderNotes() {
+      const container = document.getElementById('notes-container');
+      if(!container) return;
+      container.innerHTML = '';
+
+      if(notesList.length === 0) {
+        container.innerHTML = '<p style="color:var(--text-dim); text-align:center; margin-top:20px;">Nessuna nota salvata.</p>';
+        return;
+      }
+
+      notesList.forEach(n => {
+        const card = document.createElement('div');
+        card.className = 'card note-card';
+        card.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+            <h3 style="margin-bottom:0; color:var(--accent);">${n.title}</h3>
+            <div>
+              <button type="button" onclick="event.stopPropagation(); editNoteItem(${n.id})" style="width:auto; background:#333; padding:4px 8px; font-size:0.8rem; margin-right:4px;">Modifica</button>
+              <button type="button" onclick="event.stopPropagation(); deleteNoteItem(${n.id})" style="width:auto; background:none; border:none; color:#ff4d4d; padding:4px; font-size:0.85rem; cursor:pointer;">🗑️</button>
+            </div>
+          </div>
+          <p style="color:var(--text-dim); font-size:0.85rem; white-space: pre-wrap; margin-top:5px;">${n.content ? n.content.substring(0, 80) + (n.content.length > 80 ? '...' : '') : 'Nessun contenuto'}</p>
+        `;
+        card.onclick = () => editNoteItem(n.id);
+        container.appendChild(card);
+      });
     }
 
     // --- TOOLS E LINK ---
@@ -538,13 +633,14 @@
         });
         listHtml += `</ul>`;
 
-        card.innerHTML = `<h3> ${cat}</h3>${listHtml}`;
+        card.innerHTML = `<h3>${cat}</h3>${listHtml}`;
         container.appendChild(card);
       });
     }
 
     // Inizializzazione all'avvio
     renderProjects();
+    renderNotes();
     renderTools();
     updateCategoryDropdown();
     updateNavActiveState();
