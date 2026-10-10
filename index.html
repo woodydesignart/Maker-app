@@ -47,13 +47,8 @@
       user-select: none;
     }
 
-    .brand-logo .p-white {
-      color: #ffffff;
-    }
-
-    .brand-logo .p-orange {
-      color: var(--accent);
-    }
+    .brand-logo .p-white { color: #ffffff; }
+    .brand-logo .p-orange { color: var(--accent); }
 
     .nav-bar {
       display: flex;
@@ -69,7 +64,7 @@
       padding: 4px 8px;
       border-bottom: 2px solid transparent;
       cursor: pointer;
-      transition: all 0.3s;
+      transition: all 0.2s ease;
       user-select: none;
     }
 
@@ -82,7 +77,7 @@
       display: flex;
       width: 100vw;
       height: 100vh;
-      padding-top: 115px; 
+      padding-top: 95px; 
       overflow-x: auto;
       scroll-snap-type: x mandatory;
       scroll-behavior: smooth;
@@ -95,7 +90,7 @@
       width: 100vw;
       height: 100%;
       scroll-snap-align: start;
-      padding: 0 15px 90px 15px;
+      padding: 10px 15px 90px 15px;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
     }
@@ -255,7 +250,7 @@
 
   <script>
     // ==========================================
-    // 📌 GESTIONE LINK PREDEFINITI
+    // 📌 LINK PREDEFINITI
     // ==========================================
     const defaultTools = [
       { id: 1, title: "Makerworld", url: "https://makerworld.com/en", cat: "Stampa 3D", default: true },
@@ -265,21 +260,17 @@
       { id: 5, title: "Gridfinity", url: "https://gridfinity.perplexinglabs.com/", cat: "Stampa 3D", default: true },
       { id: 6, title: "Tooltrace", url: "https://www.tooltrace.ai/", cat: "Stampa 3D", default: true }
     ];
-    // ==========================================
 
     const slider = document.getElementById('slider');
     let currentSlide = 0;
-    let isScrolling;
 
+    // Sincronizzazione dinamica corretta della navigazione
     slider.addEventListener('scroll', () => {
-      window.clearTimeout(isScrolling);
-      isScrolling = setTimeout(() => {
-        const index = Math.round(slider.scrollLeft / slider.clientWidth);
-        if (index !== currentSlide && index >= 0 && index < 3) {
-          currentSlide = index;
-          updateNavActiveState();
-        }
-      }, 50);
+      const index = Math.round(slider.scrollLeft / window.innerWidth);
+      if (index !== currentSlide && index >= 0 && index < 3) {
+        currentSlide = index;
+        updateNavActiveState();
+      }
     });
 
     function updateNavActiveState() {
@@ -298,7 +289,12 @@
     }
 
     // --- PROGETTI ---
-    let projects = JSON.parse(localStorage.getItem('maker_projects') || '[]');
+    let projects = [];
+    try {
+      projects = JSON.parse(localStorage.getItem('maker_projects')) || [];
+    } catch(e) {
+      projects = [];
+    }
 
     function toggleProjectForm() {
       const form = document.getElementById('project-form');
@@ -453,7 +449,12 @@
     }
 
     // --- TOOLS E LINK ---
-    let userTools = JSON.parse(localStorage.getItem('maker_user_tools') || '[]');
+    let userTools = [];
+    try {
+      userTools = JSON.parse(localStorage.getItem('maker_user_tools')) || [];
+    } catch(e) {
+      userTools = [];
+    }
 
     function checkToolCustomCategory(val) {
       document.getElementById('custom-link-custom-cat').style.display = val === 'Altro' ? 'block' : 'none';
@@ -470,4 +471,85 @@
 
       if(!title || !url) return alert('Inserisci sia il nome che l\'URL');
 
-      userTools.
+      userTools.push({ id: Date.now(), title, url, cat, default: false });
+      localStorage.setItem('maker_user_tools', JSON.stringify(userTools));
+
+      document.getElementById('custom-link-title').value = '';
+      document.getElementById('custom-link-url').value = '';
+      document.getElementById('custom-link-custom-cat').value = '';
+      document.getElementById('custom-link-cat').value = 'Stampa 3D';
+      document.getElementById('custom-link-custom-cat').style.display = 'none';
+
+      renderTools();
+      updateCategoryDropdown();
+    }
+
+    function deleteUserTool(id) {
+      if(confirm('Vuoi rimuovere questo link?')) {
+        userTools = userTools.filter(t => t.id !== id);
+        localStorage.setItem('maker_user_tools', JSON.stringify(userTools));
+        renderTools();
+        updateCategoryDropdown();
+      }
+    }
+
+    function updateCategoryDropdown() {
+      const select = document.getElementById('custom-link-cat');
+      if(!select) return;
+      const currentVal = select.value;
+      
+      const allTools = [...defaultTools, ...userTools];
+      const categories = [...new Set(allTools.map(t => t.cat))];
+
+      let html = '';
+      categories.forEach(c => {
+        html += `<option value="${c}">${c}</option>`;
+      });
+      html += `<option value="Altro">Altra Categoria...</option>`;
+      
+      select.innerHTML = html;
+      select.value = categories.includes(currentVal) ? currentVal : categories[0];
+    }
+
+    function renderTools() {
+      const container = document.getElementById('tools-categories-container');
+      if(!container) return;
+      container.innerHTML = '';
+
+      const allTools = [...defaultTools, ...userTools];
+      const categories = [...new Set(allTools.map(t => t.cat))];
+
+      categories.forEach(cat => {
+        const catTools = allTools.filter(t => t.cat === cat);
+        
+        const card = document.createElement('div');
+        card.className = 'card';
+        
+        let listHtml = `<ul class="link-list">`;
+        catTools.forEach(t => {
+          listHtml += `
+            <li>
+              <a href="${t.url}" target="_blank">${t.title}</a>
+              ${!t.default ? `<button type="button" onclick="deleteUserTool(${t.id})" style="width:auto; background:none; border:none; color:#ff4d4d; padding:2px 6px; font-size:0.85rem; cursor:pointer;">✕</button>` : ''}
+            </li>
+          `;
+        });
+        listHtml += `</ul>`;
+
+        card.innerHTML = `<h3>📌 ${cat}</h3>${listHtml}`;
+        container.appendChild(card);
+      });
+    }
+
+    // Inizializzazione all'avvio
+    renderProjects();
+    renderTools();
+    updateCategoryDropdown();
+    updateNavActiveState();
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+  </script>
+</body>
+</html>
