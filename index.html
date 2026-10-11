@@ -336,19 +336,19 @@
           </table>
         </div>
 
-        <!-- Schema vettoriale del dado -->
+        <!-- Schema vettoriale del dado (con viewBox corretto e senza testo di riepilogo) -->
         <h3 style="color: var(--accent); margin-top: 15px;">Dadi Esagonali (Quote)</h3>
         <div class="card" style="text-align: center; padding: 10px;">
-          <svg viewBox="0 0 320 140" style="width: 100%; max-width: 280px; height: auto;">
+          <svg viewBox="0 0 320 155" style="width: 100%; max-width: 280px; height: auto;">
             <!-- Sezione Laterale (m = altezza/spessore) -->
             <g transform="translate(40, 10)">
               <path d="M 15 10 L 45 10 L 50 25 L 50 85 L 45 100 L 15 100 L 10 85 L 10 25 Z" fill="#1e1e1e" stroke="#ff6b00" stroke-width="2"/>
               <line x1="20" y1="10" x2="20" y2="100" stroke="#a0a0a0" stroke-dasharray="4,4" stroke-width="1.5"/>
               <line x1="40" y1="10" x2="40" y2="100" stroke="#a0a0a0" stroke-dasharray="4,4" stroke-width="1.5"/>
-              <line x1="10" y1="110" x2="10" y2="125" stroke="#fff" stroke-width="1"/>
-              <line x1="50" y1="110" x2="50" y2="125" stroke="#fff" stroke-width="1"/>
-              <line x1="10" y1="120" x2="50" y2="120" stroke="#fff" stroke-width="1"/>
-              <text x="27" y="136" fill="#ff6b00" font-size="14" font-weight="bold">m</text>
+              <line x1="10" y1="110" x2="10" y2="130" stroke="#fff" stroke-width="1"/>
+              <line x1="50" y1="110" x2="50" y2="130" stroke="#fff" stroke-width="1"/>
+              <line x1="10" y1="125" x2="50" y2="125" stroke="#fff" stroke-width="1"/>
+              <text x="27" y="145" fill="#ff6b00" font-size="14" font-weight="bold">m</text>
             </g>
 
             <!-- Sezione Superiore/Esagono (S = chiave) -->
@@ -358,13 +358,12 @@
               <circle cx="50" cy="45" r="16" fill="none" stroke="#a0a0a0" stroke-dasharray="3,3" stroke-width="1"/>
               <line x1="50" y1="-5" x2="50" y2="95" stroke="#444" stroke-dasharray="5,3" stroke-width="1"/>
               <line x1="-5" y1="45" x2="105" y2="45" stroke="#444" stroke-dasharray="5,3" stroke-width="1"/>
-              <line x1="15" y1="95" x2="15" y2="105" stroke="#fff" stroke-width="1"/>
-              <line x1="85" y1="95" x2="85" y2="105" stroke="#fff" stroke-width="1"/>
-              <line x1="15" y1="100" x2="85" y2="100" stroke="#fff" stroke-width="1"/>
-              <text x="47" y="120" fill="#ff6b00" font-size="14" font-weight="bold">S</text>
+              <line x1="15" y1="95" x2="15" y2="110" stroke="#fff" stroke-width="1"/>
+              <line x1="85" y1="95" x2="85" y2="110" stroke="#fff" stroke-width="1"/>
+              <line x1="15" y1="105" x2="85" y2="105" stroke="#fff" stroke-width="1"/>
+              <text x="47" y="127" fill="#ff6b00" font-size="14" font-weight="bold">S</text>
             </g>
           </svg>
-          <p style="font-size: 0.75rem; color: var(--text-dim); margin-top: 5px;">Spessore (m) e Apertura Chiave (S)</p>
         </div>
 
         <!-- Tabella Misure Dadi Esagonali (Senza M2.5) -->
