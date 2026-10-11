@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pocketool-v10'; // Incrementi questo a ogni modifica
+const CACHE_NAME = 'pocketool-v11'; // Incrementi questo a ogni modifica
 const urlsToCache = [
   './',
   './index.html',
