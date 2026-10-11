@@ -96,14 +96,22 @@
       width: 100vw;
       height: 100%;
       scroll-snap-align: start;
-      padding: 10px 15px 90px 15px;
+      padding: 10px 15px 30px 15px;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
     }
 
+    /* Layout flessibile per spingere il footer sempre in fondo */
     .content-box {
       max-width: 600px;
       margin: 0 auto;
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .main-content {
+      flex: 1;
     }
 
     .card {
@@ -156,11 +164,11 @@
       border-color: var(--accent);
     }
 
-    /* Stili Footer Maker */
+    /* Stili Footer Maker (Adesivo a piè di pagina) */
     .maker-footer {
       text-align: center;
-      padding: 25px 10px 15px 10px;
-      margin-top: 30px;
+      padding: 20px 10px 25px 10px;
+      margin-top: 20px;
       border-top: 1px dashed var(--border);
       color: var(--text-dim);
       font-size: 0.8rem;
@@ -175,7 +183,7 @@
       margin-top: 4px;
     }
     .maker-footer p {
-      margin-bottom: 6px;
+      margin-bottom: 4px;
       line-height: 1.4;
     }
   </style>
@@ -199,46 +207,47 @@
     <!-- SEZIONE 1: PROGETTI -->
     <div class="slide-section" id="slide-0">
       <div class="content-box">
-        <h2>I Miei Progetti</h2>
-        
-        <button class="btn-main" id="new-proj-btn" onclick="toggleProjectForm()">+ Nuovo Progetto</button>
-
-        <div id="project-form" class="card" style="display:none;">
-          <h3 id="form-title">Nuovo Progetto</h3>
-          <input type="hidden" id="p-id" value="">
-          <input type="text" id="p-name" placeholder="Nome del progetto">
+        <div class="main-content">
+          <h2>I Miei Progetti</h2>
           
-          <select id="p-cat" onchange="checkCustomCategory(this.value)">
-            <option value="Falegnameria">Falegnameria</option>
-            <option value="Metallo">Metallo</option>
-            <option value="Stampa 3D">Stampa 3D</option>
-            <option value="Laser">Laser</option>
-            <option value="Altro">Altro (Personalizzato)</option>
-          </select>
-          <input type="text" id="p-custom-cat" placeholder="Specifica categoria..." style="display:none;">
+          <button class="btn-main" id="new-proj-btn" onclick="toggleProjectForm()">+ Nuovo Progetto</button>
 
-          <textarea id="p-notes" placeholder="Note tecniche o parametri..." rows="3"></textarea>
+          <div id="project-form" class="card" style="display:none;">
+            <h3 id="form-title">Nuovo Progetto</h3>
+            <input type="hidden" id="p-id" value="">
+            <input type="text" id="p-name" placeholder="Nome del progetto">
+            
+            <select id="p-cat" onchange="checkCustomCategory(this.value)">
+              <option value="Falegnameria">Falegnameria</option>
+              <option value="Metallo">Metallo</option>
+              <option value="Stampa 3D">Stampa 3D</option>
+              <option value="Laser">Laser</option>
+              <option value="Altro">Altro (Personalizzato)</option>
+            </select>
+            <input type="text" id="p-custom-cat" placeholder="Specifica categoria..." style="display:none;">
 
-          <h4>Elenco Materiali e Costi</h4>
-          <table class="mat-table">
-            <thead>
-              <tr>
-                <th>Materiale</th>
-                <th style="width: 80px;">Costo (€)</th>
-                <th style="width: 35px;"></th>
-              </tr>
-            </thead>
-            <tbody id="materials-list"></tbody>
-          </table>
-          <button type="button" onclick="addMaterialRow()" style="background:#333;">+ Materiale</button>
+            <textarea id="p-notes" placeholder="Note tecniche o parametri..." rows="3"></textarea>
 
-          <button class="btn-main" onclick="saveProject()">Salva Progetto</button>
-          <button type="button" onclick="hideProjectForm()" style="background:#444;">Annulla</button>
+            <h4>Elenco Materiali e Costi</h4>
+            <table class="mat-table">
+              <thead>
+                <tr>
+                  <th>Materiale</th>
+                  <th style="width: 80px;">Costo (€)</th>
+                  <th style="width: 35px;"></th>
+                </tr>
+              </thead>
+              <tbody id="materials-list"></tbody>
+            </table>
+            <button type="button" onclick="addMaterialRow()" style="background:#333;">+ Materiale</button>
+
+            <button class="btn-main" onclick="saveProject()">Salva Progetto</button>
+            <button type="button" onclick="hideProjectForm()" style="background:#444;">Annulla</button>
+          </div>
+
+          <div id="projects-container"></div>
         </div>
 
-        <div id="projects-container"></div>
-
-        <!-- FOOTER -->
         <div class="maker-footer">
           <p>Pocketool è un progetto indipendente creato da un maker per i makers.</p>
           <p>Se ti è utile, condividilo con altri appassionati!</p>
@@ -253,24 +262,25 @@
     <!-- SEZIONE 2: NOTEPAD -->
     <div class="slide-section" id="slide-1">
       <div class="content-box">
-        <h2>Notepad</h2>
-        
-        <div class="card">
-          <input type="hidden" id="active-note-id" value="">
-          <input type="text" id="active-note-title" placeholder="Titolo nota..." style="margin-bottom:8px;">
-          <textarea id="active-note-content" placeholder="Scrivi una nota..." rows="3" style="resize:vertical; margin-bottom:8px;"></textarea>
+        <div class="main-content">
+          <h2>Notepad</h2>
           
-          <div style="display: flex; gap: 8px;">
-            <button class="btn-main" onclick="saveQuickNote()" style="flex: 1; margin-bottom: 0;" title="Conferma Nota">✔ Conferma</button>
-            <button type="button" onclick="clearNoteEditor()" style="width: auto; background: #333; margin-bottom: 0;" title="Pulisci campi">✕</button>
+          <div class="card">
+            <input type="hidden" id="active-note-id" value="">
+            <input type="text" id="active-note-title" placeholder="Titolo nota..." style="margin-bottom:8px;">
+            <textarea id="active-note-content" placeholder="Scrivi una nota..." rows="3" style="resize:vertical; margin-bottom:8px;"></textarea>
+            
+            <div style="display: flex; gap: 8px;">
+              <button class="btn-main" onclick="saveQuickNote()" style="flex: 1; margin-bottom: 0;" title="Conferma Nota">✔ Conferma</button>
+              <button type="button" onclick="clearNoteEditor()" style="width: auto; background: #333; margin-bottom: 0;" title="Pulisci campi">✕</button>
+            </div>
           </div>
+
+          <button class="btn-main" onclick="clearNoteEditor()" style="margin-bottom: 15px;">+ Nuova Nota</button>
+
+          <div id="notes-container"></div>
         </div>
 
-        <button class="btn-main" onclick="clearNoteEditor()" style="margin-bottom: 15px;">+ Nuova Nota</button>
-
-        <div id="notes-container"></div>
-
-        <!-- FOOTER -->
         <div class="maker-footer">
           <p>Pocketool è un progetto indipendente creato da un maker per i makers.</p>
           <p>Se ti è utile, condividilo con altri appassionati!</p>
@@ -285,28 +295,29 @@
     <!-- SEZIONE 3: TOOLS -->
     <div class="slide-section" id="slide-2">
       <div class="content-box">
-        <h2>Tools & Risorse</h2>
+        <div class="main-content">
+          <h2>Tools & Risorse</h2>
 
-        <div class="card">
-          <h3>Aggiungi nuovo link</h3>
-          <input type="text" id="custom-link-title" placeholder="Nome Tool (es. Calcolatore Viti)">
-          <input type="url" id="custom-link-url" placeholder="https://...">
-          <input type="text" id="custom-link-desc" placeholder="Breve descrizione (es. Calcola lunghezze)">
-          
-          <select id="custom-link-cat" onchange="checkToolCustomCategory(this.value)">
-            <option value="Stampa 3D">Stampa 3D</option>
-            <option value="Laser Cut">Laser Cut</option>
-            <option value="Falegnameria">Falegnameria</option>
-            <option value="Altro">Altra Categoria...</option>
-          </select>
-          <input type="text" id="custom-link-custom-cat" placeholder="Nome nuova categoria..." style="display:none;">
+          <div class="card">
+            <h3>Aggiungi nuovo link</h3>
+            <input type="text" id="custom-link-title" placeholder="Nome Tool (es. Calcolatore Viti)">
+            <input type="url" id="custom-link-url" placeholder="https://...">
+            <input type="text" id="custom-link-desc" placeholder="Breve descrizione (es. Calcola lunghezze)">
+            
+            <select id="custom-link-cat" onchange="checkToolCustomCategory(this.value)">
+              <option value="Stampa 3D">Stampa 3D</option>
+              <option value="Laser Cut">Laser Cut</option>
+              <option value="Falegnameria">Falegnameria</option>
+              <option value="Altro">Altra Categoria...</option>
+            </select>
+            <input type="text" id="custom-link-custom-cat" placeholder="Nome nuova categoria..." style="display:none;">
 
-          <button class="btn-main" onclick="addCustomLink()">Aggiungi Link</button>
+            <button class="btn-main" onclick="addCustomLink()">Aggiungi Link</button>
+          </div>
+
+          <div id="tools-categories-container"></div>
         </div>
 
-        <div id="tools-categories-container"></div>
-
-        <!-- FOOTER -->
         <div class="maker-footer">
           <p>Pocketool è un progetto indipendente creato da un maker per i makers.</p>
           <p>Se ti è utile, condividilo con altri appassionati!</p>
@@ -321,201 +332,202 @@
     <!-- SEZIONE 4: PARAMETRI -->
     <div class="slide-section" id="slide-3">
       <div class="content-box">
-        <h2>Parametri & Misure</h2>
-        
-        <!-- Tabella Fori per Filettatura (Maschiatura) -->
-        <h3 style="color: var(--accent); margin-top: 5px;">Fori per Filettatura (Maschi)</h3>
-        <p style="font-size: 0.8rem; color: var(--text-dim); margin-bottom: 8px;">Diametro della punta da usare prima di passare il maschio filettato.</p>
-        <div class="card" style="overflow-x: auto; padding: 10px;">
-          <table class="mat-table">
-            <thead>
-              <tr>
-                <th>Filetto</th>
-                <th>Passo (P)</th>
-                <th>Punta per Foro Filetto</th>
-                <th>Foro Passante (Largo)</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>M2</strong></td>
-                <td>0.40 mm</td>
-                <td><strong style="color:var(--accent)">1.6 mm</strong></td>
-                <td>2.2 mm</td>
-              </tr>
-              <tr>
-                <td><strong>M3</strong></td>
-                <td>0.50 mm</td>
-                <td><strong style="color:var(--accent)">2.5 mm</strong></td>
-                <td>3.2 mm</td>
-              </tr>
-              <tr>
-                <td><strong>M4</strong></td>
-                <td>0.70 mm</td>
-                <td><strong style="color:var(--accent)">3.3 mm</strong></td>
-                <td>4.3 mm</td>
-              </tr>
-              <tr>
-                <td><strong>M5</strong></td>
-                <td>0.80 mm</td>
-                <td><strong style="color:var(--accent)">4.2 mm</strong></td>
-                <td>5.3 mm</td>
-              </tr>
-              <tr>
-                <td><strong>M6</strong></td>
-                <td>1.00 mm</td>
-                <td><strong style="color:var(--accent)">5.0 mm</strong></td>
-                <td>6.4 mm</td>
-              </tr>
-              <tr>
-                <td><strong>M8</strong></td>
-                <td>1.25 mm</td>
-                <td><strong style="color:var(--accent)">6.8 mm</strong></td>
-                <td>8.4 mm</td>
-              </tr>
-              <tr>
-                <td><strong>M10</strong></td>
-                <td>1.50 mm</td>
-                <td><strong style="color:var(--accent)">8.5 mm</strong></td>
-                <td>10.5 mm</td>
-              </tr>
-              <tr>
-                <td><strong>M12</strong></td>
-                <td>1.75 mm</td>
-                <td><strong style="color:var(--accent)">10.2 mm</strong></td>
-                <td>13.0 mm</td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="main-content">
+          <h2>Parametri & Misure</h2>
+          
+          <!-- Tabella Fori per Filettatura (Maschiatura) -->
+          <h3 style="color: var(--accent); margin-top: 5px;">Fori per Filettatura (Maschi)</h3>
+          <p style="font-size: 0.8rem; color: var(--text-dim); margin-bottom: 8px;">Diametro della punta da usare prima di passare il maschio filettato.</p>
+          <div class="card" style="overflow-x: auto; padding: 10px;">
+            <table class="mat-table">
+              <thead>
+                <tr>
+                  <th>Filetto</th>
+                  <th>Passo (P)</th>
+                  <th>Punta per Foro Filetto</th>
+                  <th>Foro Passante (Largo)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>M2</strong></td>
+                  <td>0.40 mm</td>
+                  <td><strong style="color:var(--accent)">1.6 mm</strong></td>
+                  <td>2.2 mm</td>
+                </tr>
+                <tr>
+                  <td><strong>M3</strong></td>
+                  <td>0.50 mm</td>
+                  <td><strong style="color:var(--accent)">2.5 mm</strong></td>
+                  <td>3.2 mm</td>
+                </tr>
+                <tr>
+                  <td><strong>M4</strong></td>
+                  <td>0.70 mm</td>
+                  <td><strong style="color:var(--accent)">3.3 mm</strong></td>
+                  <td>4.3 mm</td>
+                </tr>
+                <tr>
+                  <td><strong>M5</strong></td>
+                  <td>0.80 mm</td>
+                  <td><strong style="color:var(--accent)">4.2 mm</strong></td>
+                  <td>5.3 mm</td>
+                </tr>
+                <tr>
+                  <td><strong>M6</strong></td>
+                  <td>1.00 mm</td>
+                  <td><strong style="color:var(--accent)">5.0 mm</strong></td>
+                  <td>6.4 mm</td>
+                </tr>
+                <tr>
+                  <td><strong>M8</strong></td>
+                  <td>1.25 mm</td>
+                  <td><strong style="color:var(--accent)">6.8 mm</strong></td>
+                  <td>8.4 mm</td>
+                </tr>
+                <tr>
+                  <td><strong>M10</strong></td>
+                  <td>1.50 mm</td>
+                  <td><strong style="color:var(--accent)">8.5 mm</strong></td>
+                  <td>10.5 mm</td>
+                </tr>
+                <tr>
+                  <td><strong>M12</strong></td>
+                  <td>1.75 mm</td>
+                  <td><strong style="color:var(--accent)">10.2 mm</strong></td>
+                  <td>13.0 mm</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Schema vettoriale del dado -->
+          <h3 style="color: var(--accent); margin-top: 15px;">Dadi Esagonali (Quote)</h3>
+          <div class="card" style="text-align: center; padding: 10px;">
+            <svg viewBox="0 0 320 155" style="width: 100%; max-width: 280px; height: auto;">
+              <!-- Sezione Laterale (m = altezza/spessore) -->
+              <g transform="translate(40, 10)">
+                <path d="M 15 10 L 45 10 L 50 25 L 50 85 L 45 100 L 15 100 L 10 85 L 10 25 Z" fill="#1e1e1e" stroke="#ff6b00" stroke-width="2"/>
+                <line x1="20" y1="10" x2="20" y2="100" stroke="#a0a0a0" stroke-dasharray="4,4" stroke-width="1.5"/>
+                <line x1="40" y1="10" x2="40" y2="100" stroke="#a0a0a0" stroke-dasharray="4,4" stroke-width="1.5"/>
+                <line x1="10" y1="110" x2="10" y2="130" stroke="#fff" stroke-width="1"/>
+                <line x1="50" y1="110" x2="50" y2="130" stroke="#fff" stroke-width="1"/>
+                <line x1="10" y1="125" x2="50" y2="125" stroke="#fff" stroke-width="1"/>
+                <text x="27" y="145" fill="#ff6b00" font-size="14" font-weight="bold">m</text>
+              </g>
+
+              <!-- Sezione Superiore/Esagono (S = chiave) -->
+              <g transform="translate(190, 10)">
+                <polygon points="50,5 85,25 85,65 50,85 15,65 15,25" fill="#1e1e1e" stroke="#ff6b00" stroke-width="2"/>
+                <circle cx="50" cy="45" r="22" fill="none" stroke="#a0a0a0" stroke-width="1.5"/>
+                <circle cx="50" cy="45" r="16" fill="none" stroke="#a0a0a0" stroke-dasharray="3,3" stroke-width="1"/>
+                <line x1="50" y1="-5" x2="50" y2="95" stroke="#444" stroke-dasharray="5,3" stroke-width="1"/>
+                <line x1="-5" y1="45" x2="105" y2="45" stroke="#444" stroke-dasharray="5,3" stroke-width="1"/>
+                <line x1="15" y1="95" x2="15" y2="110" stroke="#fff" stroke-width="1"/>
+                <line x1="85" y1="95" x2="85" y2="110" stroke="#fff" stroke-width="1"/>
+                <line x1="15" y1="105" x2="85" y2="105" stroke="#fff" stroke-width="1"/>
+                <text x="47" y="127" fill="#ff6b00" font-size="14" font-weight="bold">S</text>
+              </g>
+            </svg>
+          </div>
+
+          <!-- Tabella Misure Dadi Esagonali (Senza M2.5) -->
+          <div class="card" style="overflow-x: auto; padding: 10px;">
+            <table class="mat-table">
+              <thead>
+                <tr>
+                  <th>Filetto (D)</th>
+                  <th>Passo (P)</th>
+                  <th colspan="2">Altezza (m)</th>
+                  <th colspan="2">Chiave (S)</th>
+                </tr>
+                <tr style="font-size: 0.75rem; color: var(--text-dim);">
+                  <th>Misura</th>
+                  <th>Pitch</th>
+                  <th>max</th>
+                  <th>min</th>
+                  <th>max</th>
+                  <th>min</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>M2</strong></td>
+                  <td>0.4 mm</td>
+                  <td>1.6 mm</td>
+                  <td>1.35 mm</td>
+                  <td>4 mm</td>
+                  <td>3.82 mm</td>
+                </tr>
+                <tr>
+                  <td><strong>M3</strong></td>
+                  <td>0.5 mm</td>
+                  <td>2.4 mm</td>
+                  <td>2.15 mm</td>
+                  <td>5.5 mm</td>
+                  <td>5.32 mm</td>
+                </tr>
+                <tr>
+                  <td><strong>M4</strong></td>
+                  <td>0.7 mm</td>
+                  <td>3.2 mm</td>
+                  <td>2.9 mm</td>
+                  <td>7 mm</td>
+                  <td>6.78 mm</td>
+                </tr>
+                <tr>
+                  <td><strong>M5</strong></td>
+                  <td>0.8 mm</td>
+                  <td>4 mm</td>
+                  <td>3.7 mm</td>
+                  <td>8 mm</td>
+                  <td>7.78 mm</td>
+                </tr>
+                <tr>
+                  <td><strong>M6</strong></td>
+                  <td>1 mm</td>
+                  <td>5 mm</td>
+                  <td>4.7 mm</td>
+                  <td>10 mm</td>
+                  <td>9.78 mm</td>
+                </tr>
+                <tr>
+                  <td><strong>M7</strong></td>
+                  <td>1 mm</td>
+                  <td>5.5 mm</td>
+                  <td>5.2 mm</td>
+                  <td>11 mm</td>
+                  <td>10.73 mm</td>
+                </tr>
+                <tr>
+                  <td><strong>M8</strong></td>
+                  <td>1.25 mm</td>
+                  <td>6.5 mm</td>
+                  <td>6.14 mm</td>
+                  <td>13 mm</td>
+                  <td>12.73 mm</td>
+                </tr>
+                <tr>
+                  <td><strong>M10</strong></td>
+                  <td>1.5 mm</td>
+                  <td>8 mm</td>
+                  <td>7.64 mm</td>
+                  <td>17 mm</td>
+                  <td>16.73 mm</td>
+                </tr>
+                <tr>
+                  <td><strong>M12</strong></td>
+                  <td>1.75 mm</td>
+                  <td>10 mm</td>
+                  <td>9.64 mm</td>
+                  <td>19 mm</td>
+                  <td>18.67 mm</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
 
-        <!-- Schema vettoriale del dado -->
-        <h3 style="color: var(--accent); margin-top: 15px;">Dadi Esagonali (Quote)</h3>
-        <div class="card" style="text-align: center; padding: 10px;">
-          <svg viewBox="0 0 320 155" style="width: 100%; max-width: 280px; height: auto;">
-            <!-- Sezione Laterale (m = altezza/spessore) -->
-            <g transform="translate(40, 10)">
-              <path d="M 15 10 L 45 10 L 50 25 L 50 85 L 45 100 L 15 100 L 10 85 L 10 25 Z" fill="#1e1e1e" stroke="#ff6b00" stroke-width="2"/>
-              <line x1="20" y1="10" x2="20" y2="100" stroke="#a0a0a0" stroke-dasharray="4,4" stroke-width="1.5"/>
-              <line x1="40" y1="10" x2="40" y2="100" stroke="#a0a0a0" stroke-dasharray="4,4" stroke-width="1.5"/>
-              <line x1="10" y1="110" x2="10" y2="130" stroke="#fff" stroke-width="1"/>
-              <line x1="50" y1="110" x2="50" y2="130" stroke="#fff" stroke-width="1"/>
-              <line x1="10" y1="125" x2="50" y2="125" stroke="#fff" stroke-width="1"/>
-              <text x="27" y="145" fill="#ff6b00" font-size="14" font-weight="bold">m</text>
-            </g>
-
-            <!-- Sezione Superiore/Esagono (S = chiave) -->
-            <g transform="translate(190, 10)">
-              <polygon points="50,5 85,25 85,65 50,85 15,65 15,25" fill="#1e1e1e" stroke="#ff6b00" stroke-width="2"/>
-              <circle cx="50" cy="45" r="22" fill="none" stroke="#a0a0a0" stroke-width="1.5"/>
-              <circle cx="50" cy="45" r="16" fill="none" stroke="#a0a0a0" stroke-dasharray="3,3" stroke-width="1"/>
-              <line x1="50" y1="-5" x2="50" y2="95" stroke="#444" stroke-dasharray="5,3" stroke-width="1"/>
-              <line x1="-5" y1="45" x2="105" y2="45" stroke="#444" stroke-dasharray="5,3" stroke-width="1"/>
-              <line x1="15" y1="95" x2="15" y2="110" stroke="#fff" stroke-width="1"/>
-              <line x1="85" y1="95" x2="85" y2="110" stroke="#fff" stroke-width="1"/>
-              <line x1="15" y1="105" x2="85" y2="105" stroke="#fff" stroke-width="1"/>
-              <text x="47" y="127" fill="#ff6b00" font-size="14" font-weight="bold">S</text>
-            </g>
-          </svg>
-        </div>
-
-        <!-- Tabella Misure Dadi Esagonali (Senza M2.5) -->
-        <div class="card" style="overflow-x: auto; padding: 10px;">
-          <table class="mat-table">
-            <thead>
-              <tr>
-                <th>Filetto (D)</th>
-                <th>Passo (P)</th>
-                <th colspan="2">Altezza (m)</th>
-                <th colspan="2">Chiave (S)</th>
-              </tr>
-              <tr style="font-size: 0.75rem; color: var(--text-dim);">
-                <th>Misura</th>
-                <th>Pitch</th>
-                <th>max</th>
-                <th>min</th>
-                <th>max</th>
-                <th>min</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>M2</strong></td>
-                <td>0.4 mm</td>
-                <td>1.6 mm</td>
-                <td>1.35 mm</td>
-                <td>4 mm</td>
-                <td>3.82 mm</td>
-              </tr>
-              <tr>
-                <td><strong>M3</strong></td>
-                <td>0.5 mm</td>
-                <td>2.4 mm</td>
-                <td>2.15 mm</td>
-                <td>5.5 mm</td>
-                <td>5.32 mm</td>
-              </tr>
-              <tr>
-                <td><strong>M4</strong></td>
-                <td>0.7 mm</td>
-                <td>3.2 mm</td>
-                <td>2.9 mm</td>
-                <td>7 mm</td>
-                <td>6.78 mm</td>
-              </tr>
-              <tr>
-                <td><strong>M5</strong></td>
-                <td>0.8 mm</td>
-                <td>4 mm</td>
-                <td>3.7 mm</td>
-                <td>8 mm</td>
-                <td>7.78 mm</td>
-              </tr>
-              <tr>
-                <td><strong>M6</strong></td>
-                <td>1 mm</td>
-                <td>5 mm</td>
-                <td>4.7 mm</td>
-                <td>10 mm</td>
-                <td>9.78 mm</td>
-              </tr>
-              <tr>
-                <td><strong>M7</strong></td>
-                <td>1 mm</td>
-                <td>5.5 mm</td>
-                <td>5.2 mm</td>
-                <td>11 mm</td>
-                <td>10.73 mm</td>
-              </tr>
-              <tr>
-                <td><strong>M8</strong></td>
-                <td>1.25 mm</td>
-                <td>6.5 mm</td>
-                <td>6.14 mm</td>
-                <td>13 mm</td>
-                <td>12.73 mm</td>
-              </tr>
-              <tr>
-                <td><strong>M10</strong></td>
-                <td>1.5 mm</td>
-                <td>8 mm</td>
-                <td>7.64 mm</td>
-                <td>17 mm</td>
-                <td>16.73 mm</td>
-              </tr>
-              <tr>
-                <td><strong>M12</strong></td>
-                <td>1.75 mm</td>
-                <td>10 mm</td>
-                <td>9.64 mm</td>
-                <td>19 mm</td>
-                <td>18.67 mm</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- FOOTER -->
         <div class="maker-footer">
           <p>Pocketool è un progetto indipendente creato da un maker per i makers.</p>
           <p>Se ti è utile, condividilo con altri appassionati!</p>
@@ -524,7 +536,6 @@
             @woodydesignart
           </a>
         </div>
-
       </div>
     </div>
 
