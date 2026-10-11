@@ -167,7 +167,7 @@
       <div class="nav-item active" id="nav-0" onclick="scrollToSlide(0)">Progetti</div>
       <div class="nav-item" id="nav-1" onclick="scrollToSlide(1)">Notepad</div>
       <div class="nav-item" id="nav-2" onclick="scrollToSlide(2)">Tools</div>
-      <div class="nav-item" id="nav-3" onclick="scrollToSlide(3)">Misure Dadi</div>
+      <div class="nav-item" id="nav-3" onclick="scrollToSlide(3)">Parametri</div>
     </div>
   </header>
 
@@ -265,49 +265,109 @@
       </div>
     </div>
 
-    <!-- SEZIONE 4: MISURE DADI -->
+    <!-- SEZIONE 4: PARAMETRI -->
     <div class="slide-section" id="slide-3">
       <div class="content-box">
-        <h2>Tabella Misure Dadi Esagonali</h2>
+        <h2>Parametri & Misure</h2>
         
-        <!-- Schema vettoriale rielaborato del dado (Profilo e Pianta) -->
+        <!-- Tabella Fori per Filettatura (Maschiatura) -->
+        <h3 style="color: var(--accent); margin-top: 5px;">Fori per Filettatura (Maschi)</h3>
+        <p style="font-size: 0.8rem; color: var(--text-dim); margin-bottom: 8px;">Diametro della punta da usare prima di passare il maschio filettato.</p>
+        <div class="card" style="overflow-x: auto; padding: 10px;">
+          <table class="mat-table">
+            <thead>
+              <tr>
+                <th>Filetto</th>
+                <th>Passo (P)</th>
+                <th>Punta per Foro Filetto</th>
+                <th>Foro Passante (Largo)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>M2</strong></td>
+                <td>0.40 mm</td>
+                <td><strong style="color:var(--accent)">1.6 mm</strong></td>
+                <td>2.2 mm</td>
+              </tr>
+              <tr>
+                <td><strong>M3</strong></td>
+                <td>0.50 mm</td>
+                <td><strong style="color:var(--accent)">2.5 mm</strong></td>
+                <td>3.2 mm</td>
+              </tr>
+              <tr>
+                <td><strong>M4</strong></td>
+                <td>0.70 mm</td>
+                <td><strong style="color:var(--accent)">3.3 mm</strong></td>
+                <td>4.3 mm</td>
+              </tr>
+              <tr>
+                <td><strong>M5</strong></td>
+                <td>0.80 mm</td>
+                <td><strong style="color:var(--accent)">4.2 mm</strong></td>
+                <td>5.3 mm</td>
+              </tr>
+              <tr>
+                <td><strong>M6</strong></td>
+                <td>1.00 mm</td>
+                <td><strong style="color:var(--accent)">5.0 mm</strong></td>
+                <td>6.4 mm</td>
+              </tr>
+              <tr>
+                <td><strong>M8</strong></td>
+                <td>1.25 mm</td>
+                <td><strong style="color:var(--accent)">6.8 mm</strong></td>
+                <td>8.4 mm</td>
+              </tr>
+              <tr>
+                <td><strong>M10</strong></td>
+                <td>1.50 mm</td>
+                <td><strong style="color:var(--accent)">8.5 mm</strong></td>
+                <td>10.5 mm</td>
+              </tr>
+              <tr>
+                <td><strong>M12</strong></td>
+                <td>1.75 mm</td>
+                <td><strong style="color:var(--accent)">10.2 mm</strong></td>
+                <td>13.0 mm</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Schema vettoriale del dado -->
+        <h3 style="color: var(--accent); margin-top: 15px;">Dadi Esagonali (Quote)</h3>
         <div class="card" style="text-align: center; padding: 10px;">
           <svg viewBox="0 0 320 140" style="width: 100%; max-width: 280px; height: auto;">
-            <!-- Sezione Laterale (m e D) -->
+            <!-- Sezione Laterale (m = altezza/spessore) -->
             <g transform="translate(40, 10)">
-              <!-- Corpo dado laterale -->
               <path d="M 15 10 L 45 10 L 50 25 L 50 85 L 45 100 L 15 100 L 10 85 L 10 25 Z" fill="#1e1e1e" stroke="#ff6b00" stroke-width="2"/>
-              <!-- Filettatura interna tratteggiata -->
               <line x1="20" y1="10" x2="20" y2="100" stroke="#a0a0a0" stroke-dasharray="4,4" stroke-width="1.5"/>
               <line x1="40" y1="10" x2="40" y2="100" stroke="#a0a0a0" stroke-dasharray="4,4" stroke-width="1.5"/>
-              <!-- Linee quota m (altezza) -->
-              <line x1="0" y1="10" x2="10" y2="10" stroke="#fff" stroke-width="1"/>
-              <line x1="0" y1="100" x2="10" y2="100" stroke="#fff" stroke-width="1"/>
-              <line x1="5" y1="10" x2="5" y2="100" stroke="#fff" stroke-width="1"/>
-              <text x="12" y="60" fill="#ff6b00" font-size="14" font-weight="bold">m</text>
+              <line x1="10" y1="110" x2="10" y2="125" stroke="#fff" stroke-width="1"/>
+              <line x1="50" y1="110" x2="50" y2="125" stroke="#fff" stroke-width="1"/>
+              <line x1="10" y1="120" x2="50" y2="120" stroke="#fff" stroke-width="1"/>
+              <text x="27" y="136" fill="#ff6b00" font-size="14" font-weight="bold">m</text>
             </g>
 
-            <!-- Sezione Superiore/Esagono (chiave S) -->
+            <!-- Sezione Superiore/Esagono (S = chiave) -->
             <g transform="translate(190, 10)">
-              <!-- Esagono esterno -->
               <polygon points="50,5 85,25 85,65 50,85 15,65 15,25" fill="#1e1e1e" stroke="#ff6b00" stroke-width="2"/>
-              <!-- Cerchio filettatura -->
               <circle cx="50" cy="45" r="22" fill="none" stroke="#a0a0a0" stroke-width="1.5"/>
               <circle cx="50" cy="45" r="16" fill="none" stroke="#a0a0a0" stroke-dasharray="3,3" stroke-width="1"/>
-              <!-- Assi simmetria -->
               <line x1="50" y1="-5" x2="50" y2="95" stroke="#444" stroke-dasharray="5,3" stroke-width="1"/>
               <line x1="-5" y1="45" x2="105" y2="45" stroke="#444" stroke-dasharray="5,3" stroke-width="1"/>
-              <!-- Linee quota S (chiave) -->
               <line x1="15" y1="95" x2="15" y2="105" stroke="#fff" stroke-width="1"/>
               <line x1="85" y1="95" x2="85" y2="105" stroke="#fff" stroke-width="1"/>
               <line x1="15" y1="100" x2="85" y2="100" stroke="#fff" stroke-width="1"/>
-              <text x="45" y="120" fill="#ff6b00" font-size="14" font-weight="bold">S</text>
+              <text x="47" y="120" fill="#ff6b00" font-size="14" font-weight="bold">S</text>
             </g>
           </svg>
-          <p style="font-size: 0.75rem; color: var(--text-dim); margin-top: 5px;">Rappresentazione tecnica: Altezza (m) e Apertura Chiave (S)</p>
+          <p style="font-size: 0.75rem; color: var(--text-dim); margin-top: 5px;">Spessore (m) e Apertura Chiave (S)</p>
         </div>
 
-        <!-- Tabella tradotta e pulita (senza M2.5) -->
+        <!-- Tabella Misure Dadi Esagonali (Senza M2.5) -->
         <div class="card" style="overflow-x: auto; padding: 10px;">
           <table class="mat-table">
             <thead>
@@ -421,7 +481,11 @@
       { id: 6, title: "Tooltrace", url: "https://www.tooltrace.ai", cat: "Stampa 3D", desc: "Genera sagome e formine da foto di attrezzi", default: true },
       { id: 7, title: "3axis", url: "https://3axis.co", cat: "Laser Cut", desc: "Vettori e file gratuiti per laser", default: true },
       { id: 8, title: "Cutlistoptimizer", url: "https://www.cutlistoptimizer.com", cat: "Falegnameria", desc: "Ottimizzazione tagli pannelli", default: true },
-      { id: 9, title: "Pacdora", url: "https://www.pacdora.com/resource/box-cut-out-pattern", cat: "Laser Cut", desc: "Die-cut e mockup 3D per packaging", default: true }
+      { id: 9, title: "Pacdora", url: "https://www.pacdora.com/resource/box-cut-out-pattern", cat: "Laser Cut", desc: "Die-cut e mockup 3D per packaging", default: true },
+      { id: 10, title: "MeshTexture", url: "https://www.meshtexture.com/", cat: "Stampa 3D", desc: "Applica texture e pattern 3D sui modelli", default: true },
+      { id: 11, title: "Gear Generator", url: "https://geargenerator.com", cat: "Stampa 3D", desc: "Generatore online interattivo di ingranaggi", default: true },
+      { id: 12, title: "Woodgears", url: "https://woodgears.ca/calc/", cat: "Falegnameria", desc: "Calcolatori per incastri e falegnameria", default: true },
+      { id: 13, title: "Blocklayer", url: "https://www.blocklayer.com", cat: "Falegnameria", desc: "Calcolatori geometrici per legno e tagli", default: true }
     ];
 
     const slider = document.getElementById('slider');
