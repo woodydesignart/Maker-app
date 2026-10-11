@@ -79,11 +79,12 @@
       border-bottom-color: var(--accent);
     }
 
+    /* Uso di 100dvh per adattarsi dinamicamente ai browser mobile */
     .slider-container {
       display: flex;
       width: 100vw;
-      height: 100vh;
-      padding-top: 100px; 
+      height: 100dvh;
+      padding-top: 90px; 
       overflow-x: auto;
       scroll-snap-type: x mandatory;
       scroll-behavior: smooth;
@@ -96,13 +97,11 @@
       width: 100vw;
       height: 100%;
       scroll-snap-align: start;
-      /* Aggiunto padding inferiore generoso e supporto safe-area per dispositivi moderni */
-      padding: 10px 15px calc(50px + env(safe-area-inset-bottom)) 15px;
+      padding: 15px 15px 100px 15px; /* Padding inferiore ampio per garantire spazio all'interno dello scroll */
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
     }
 
-    /* Layout flessibile per spingere il footer sempre in fondo */
     .content-box {
       max-width: 600px;
       margin: 0 auto;
@@ -165,11 +164,12 @@
       border-color: var(--accent);
     }
 
-    /* Stili Footer Maker */
+    /* Footer con margine extra di sicurezza in basso */
     .maker-footer {
       text-align: center;
-      padding: 20px 10px 10px 10px;
-      margin-top: 20px;
+      padding: 20px 10px 30px 10px;
+      margin-top: 30px;
+      margin-bottom: 40px; /* Spazio extra garantito contro i bordi inferiori del telefono */
       border-top: 1px dashed var(--border);
       color: var(--text-dim);
       font-size: 0.8rem;
@@ -181,7 +181,7 @@
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      margin-top: 4px;
+      margin-top: 6px;
     }
     .maker-footer p {
       margin-bottom: 4px;
@@ -886,49 +886,8 @@
       select.value = categories.includes(currentVal) ? currentVal : categories[0];
     }
 
-    function renderTools() {
-      const container = document.getElementById('tools-categories-container');
-      if(!container) return;
-      container.innerHTML = '';
-
-      const allTools = [...defaultTools, ...userTools];
-      const categories = [...new Set(allTools.map(t => t.cat))];
-
-      categories.forEach(cat => {
-        const catTools = allTools.filter(t => t.cat === cat);
-        
-        const card = document.createElement('div');
-        card.className = 'card';
-        
-        let listHtml = `<ul class="link-list">`;
-        catTools.forEach(t => {
-          listHtml += `
-            <li>
-              <div style="flex: 1; margin-right: 5px; overflow: hidden;">
-                <a href="${t.url}" target="_blank" style="font-weight: 600; display: block; margin-bottom: 2px;">${t.title}</a>
-                ${t.desc ? `<span style="font-size: 0.75rem; color: var(--text-dim); display: block; line-height: 1.2;">${t.desc}</span>` : ''}
-              </div>
-              ${!t.default ? `<button type="button" onclick="deleteUserTool(${t.id})" style="width:auto; background:none; border:none; color:#ff4d4d; padding:2px 6px; font-size:0.85rem; cursor:pointer;">✕</button>` : ''}
-            </li>
-          `;
-        });
-        listHtml += `</ul>`;
-
-        card.innerHTML = `<h3>${cat}</h3>${listHtml}`;
-        container.appendChild(card);
-      });
-    }
-
-    // Inizializzazione all'avvio
-    renderProjects();
-    renderNotes();
     renderTools();
     updateCategoryDropdown();
-    updateNavActiveState();
-
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js');
-    }
   </script>
 </body>
 </html>
