@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pocketool-v2';
+const CACHE_NAME = 'pocketool-v3';
 const assetsToCache = [
   './',
   './index.html',
